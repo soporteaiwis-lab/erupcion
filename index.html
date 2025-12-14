@@ -2,51 +2,46 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Grupo Erupción - Reproductor Oficial</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Grupo Erupción - Al Calor de la Cumbia</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Font Awesome para iconos -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Font Google -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700&display=swap" rel="stylesheet">
+    
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
-        
         body {
-            font-family: 'Poppins', sans-serif;
-            background: #0f172a;
-        }
-
-        /* Animación del disco */
-        .disk-spin {
-            animation: spin 8s linear infinite;
+            font-family: 'Montserrat', sans-serif;
+            background-color: #121212; /* Spotify Dark */
+            color: white;
+            overflow-x: hidden;
         }
         
-        .paused-animation {
-            animation-play-state: paused;
+        /* Ocultar barra de scroll pero permitir funcionalidad */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
         }
 
-        @keyframes spin {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
-
-        /* Estilo para la barra de progreso */
+        /* Estilos para el rango (slider) */
         input[type=range] {
             -webkit-appearance: none;
             background: transparent;
         }
-        
         input[type=range]::-webkit-slider-thumb {
             -webkit-appearance: none;
-            height: 16px;
-            width: 16px;
+            height: 12px;
+            width: 12px;
             border-radius: 50%;
-            background: #ffffff;
-            cursor: pointer;
-            margin-top: -6px;
-            box-shadow: 0 0 10px rgba(255,255,255,0.5);
+            background: #fff;
+            margin-top: -4px;
+            box-shadow: 0 0 4px rgba(0,0,0,0.5);
         }
-
         input[type=range]::-webkit-slider-runnable-track {
             width: 100%;
             height: 4px;
@@ -54,328 +49,410 @@
             background: #4b5563;
             border-radius: 2px;
         }
-        
-        /* Efecto de onda de sonido (visual) */
-        .bar {
-            width: 6px;
-            background: #ef4444; /* Rojo Erupción */
-            animation: equalizer 1s ease-in-out infinite;
-        }
-        
-        @keyframes equalizer {
-            0% { height: 10%; }
-            50% { height: 100%; }
-            100% { height: 10%; }
+        input[type=range]:focus {
+            outline: none;
         }
 
-        .playing-indicator .bar:nth-child(1) { animation-delay: 0.1s; }
-        .playing-indicator .bar:nth-child(2) { animation-delay: 0.2s; }
-        .playing-indicator .bar:nth-child(3) { animation-delay: 0.3s; }
+        /* Animación de disco girando */
+        .spin-slow {
+            animation: spin 8s linear infinite;
+        }
+        .spin-paused {
+            animation-play-state: paused;
+        }
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* Efecto vinilo */
+        .vinyl-grooves {
+            background: 
+                radial-gradient(circle, #1a1a1a 40%, transparent 41%),
+                repeating-radial-gradient(#222 0, #222 2px, #111 3px, #111 4px);
+        }
     </style>
 </head>
-<body class="text-white h-screen flex flex-col md:flex-row overflow-hidden">
+<body class="flex justify-center min-h-screen bg-gradient-to-br from-red-900 via-gray-900 to-black">
 
-    <!-- Lado Izquierdo: Reproductor Principal -->
-    <div class="w-full md:w-1/2 h-1/2 md:h-full flex flex-col items-center justify-center p-8 bg-gradient-to-br from-slate-900 to-slate-800 relative">
+    <!-- App Container (Simula un móvil en pantallas grandes) -->
+    <div class="w-full max-w-md h-screen bg-black/40 backdrop-blur-xl relative shadow-2xl overflow-hidden flex flex-col border-x border-white/10">
         
-        <!-- Fondo decorativo desenfocado -->
-        <div class="absolute inset-0 overflow-hidden opacity-20 pointer-events-none">
-            <div class="absolute -top-24 -left-24 w-96 h-96 bg-red-600 rounded-full blur-3xl"></div>
-            <div class="absolute bottom-0 right-0 w-80 h-80 bg-orange-600 rounded-full blur-3xl"></div>
+        <!-- Header / Top Bar -->
+        <div class="px-6 py-4 flex justify-between items-center bg-gradient-to-b from-black/80 to-transparent z-10">
+            <i data-lucide="chevron-down" class="text-white w-6 h-6 cursor-pointer"></i>
+            <span class="text-xs font-bold tracking-widest text-red-400 uppercase">Reproduciendo desde Álbum</span>
+            <i data-lucide="more-horizontal" class="text-white w-6 h-6 cursor-pointer"></i>
         </div>
 
-        <!-- Carátula del Disco -->
-        <div class="relative z-10 mb-8">
-            <div id="disk-art" class="w-64 h-64 rounded-full border-4 border-gray-800 shadow-2xl overflow-hidden relative disk-spin paused-animation bg-black flex items-center justify-center">
-                <!-- Imagen central del disco -->
-                <div class="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?q=80&w=1000&auto=format&fit=crop')] bg-cover opacity-80"></div>
-                <!-- Centro del vinilo -->
-                <div class="w-20 h-20 bg-red-600 rounded-full border-4 border-white z-20 flex items-center justify-center">
-                    <span class="text-xs font-bold text-white">Erupción</span>
+        <!-- Main Content Area (Scrollable) -->
+        <div id="main-scroll" class="flex-1 overflow-y-auto no-scrollbar pb-40">
+            
+            <!-- Album Art Area -->
+            <div class="px-8 pt-4 pb-8 flex flex-col items-center justify-center">
+                <div id="album-cover" class="w-64 h-64 rounded-full shadow-2xl shadow-red-900/50 border-4 border-gray-800 relative flex items-center justify-center overflow-hidden vinyl-grooves spin-slow spin-paused transition-all duration-500">
+                    <!-- Centro del vinilo / Portada -->
+                    <div class="absolute w-24 h-24 bg-red-600 rounded-full flex items-center justify-center border-4 border-black z-10">
+                        <i data-lucide="music" class="text-black w-10 h-10"></i>
+                    </div>
+                    <!-- Brillo -->
+                    <div class="absolute top-0 left-0 w-full h-full bg-gradient-to-tr from-white/10 to-transparent rounded-full pointer-events-none"></div>
                 </div>
-                <!-- Brillo del vinilo -->
-                <div class="absolute inset-0 bg-gradient-to-tr from-white/10 to-transparent pointer-events-none"></div>
-            </div>
-        </div>
-
-        <!-- Info de la canción -->
-        <div class="text-center z-10 mb-6">
-            <h2 id="current-title" class="text-2xl font-bold mb-1 tracking-wide">Selecciona una canción</h2>
-            <p id="current-artist" class="text-gray-400 text-sm uppercase tracking-widest">Grupo Erupción</p>
-            <!-- Mensaje de estado -->
-            <p id="status-msg" class="text-xs text-red-400 mt-2 h-4 font-mono"></p>
-        </div>
-
-        <!-- Controles -->
-        <div class="w-full max-w-md z-10">
-            <!-- Barra de progreso -->
-            <div class="flex items-center gap-3 mb-4 text-xs text-gray-400 font-mono">
-                <span id="current-time">0:00</span>
-                <input type="range" id="progress-bar" value="0" class="flex-grow h-1 bg-gray-600 rounded-lg appearance-none cursor-pointer">
-                <span id="duration">0:00</span>
             </div>
 
-            <!-- Botones -->
-            <div class="flex items-center justify-center gap-8">
-                <button id="prev-btn" class="text-gray-400 hover:text-white transition transform hover:scale-110">
-                    <i class="fas fa-step-backward text-2xl"></i>
+            <!-- Song Info -->
+            <div class="px-6 mb-2">
+                <div class="flex justify-between items-end">
+                    <div>
+                        <h1 id="track-title" class="text-2xl font-bold text-white leading-tight mb-1 line-clamp-2">Selecciona una canción</h1>
+                        <p class="text-gray-400 text-sm">Grupo Erupción de Malalhue</p>
+                    </div>
+                    <button id="like-btn" class="transform transition hover:scale-110 active:scale-90">
+                        <i data-lucide="heart" class="text-gray-400 w-6 h-6 hover:text-red-500 transition-colors"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Band Credits -->
+            <div class="px-6 mt-4 mb-6">
+                <div class="bg-white/5 rounded-xl p-3 text-xs text-gray-400 border border-white/5">
+                    <p class="font-semibold text-red-400 mb-1">Integrantes:</p>
+                    <ul class="space-y-1">
+                        <li>🎹 Vildo Salazar <span class="opacity-50">(Compositor, Teclados)</span></li>
+                        <li>🎸 Heraldo Villablanca <span class="opacity-50">(Guitarras)</span></li>
+                        <li>🎸 Ruben Salazar Fritz <span class="opacity-50">(Bajo)</span></li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Progress Bar -->
+            <div class="px-6 mb-4">
+                <input type="range" id="progress-bar" value="0" class="w-full h-1 bg-gray-600 rounded-lg appearance-none cursor-pointer mb-2">
+                <div class="flex justify-between text-xs text-gray-400 font-mono">
+                    <span id="current-time">0:00</span>
+                    <span id="duration">0:00</span>
+                </div>
+            </div>
+
+            <!-- Main Controls -->
+            <div class="px-6 flex justify-between items-center mb-8">
+                <button class="text-gray-400 hover:text-white transition"><i data-lucide="shuffle" class="w-5 h-5"></i></button>
+                <button id="prev-btn" class="text-white hover:text-red-400 transition transform active:scale-90"><i data-lucide="skip-back" class="w-8 h-8 fill-current"></i></button>
+                
+                <!-- Play/Pause Button Container -->
+                <button id="play-pause-btn" class="bg-white text-black rounded-full p-4 hover:scale-105 transition shadow-lg shadow-white/20 transform active:scale-95 flex items-center justify-center w-16 h-16">
+                    <i data-lucide="play" class="w-8 h-8 fill-current ml-1" id="play-icon"></i>
                 </button>
                 
-                <button id="play-btn" class="w-16 h-16 bg-red-600 rounded-full flex items-center justify-center shadow-lg hover:bg-red-500 transition transform hover:scale-105 active:scale-95">
-                    <i class="fas fa-play text-white text-2xl ml-1" id="play-icon"></i>
-                </button>
+                <button id="next-btn" class="text-white hover:text-red-400 transition transform active:scale-90"><i data-lucide="skip-forward" class="w-8 h-8 fill-current"></i></button>
+                <button class="text-gray-400 hover:text-white transition"><i data-lucide="repeat" class="w-5 h-5"></i></button>
+            </div>
+
+            <!-- Action Tabs -->
+            <div class="px-6 flex gap-2 mb-6 overflow-x-auto no-scrollbar">
+                <button onclick="switchTab('playlist')" class="tab-btn bg-red-600 text-white px-4 py-2 rounded-full text-sm font-semibold whitespace-nowrap transition" id="tab-playlist">Lista</button>
+                <button onclick="switchTab('lyrics')" class="tab-btn bg-white/10 text-gray-300 px-4 py-2 rounded-full text-sm font-semibold whitespace-nowrap hover:bg-white/20 transition" id="tab-lyrics">Letra</button>
+                <button onclick="switchTab('comments')" class="tab-btn bg-white/10 text-gray-300 px-4 py-2 rounded-full text-sm font-semibold whitespace-nowrap hover:bg-white/20 transition" id="tab-comments">Comentarios</button>
+            </div>
+
+            <!-- Dynamic Content Section -->
+            <div class="px-6 pb-6 min-h-[200px]">
                 
-                <button id="next-btn" class="text-gray-400 hover:text-white transition transform hover:scale-110">
-                    <i class="fas fa-step-forward text-2xl"></i>
-                </button>
+                <!-- Playlist View -->
+                <div id="view-playlist" class="space-y-2">
+                    <h3 class="text-sm font-bold text-gray-400 uppercase tracking-wider mb-3">Canciones (12)</h3>
+                    <div id="playlist-container" class="space-y-1">
+                        <!-- JS injected songs -->
+                    </div>
+                </div>
+
+                <!-- Lyrics View (Hidden by default) -->
+                <div id="view-lyrics" class="hidden text-center space-y-4 animate-fade-in">
+                    <h3 class="text-xl font-bold text-red-400">Letra de la canción</h3>
+                    <div class="p-6 bg-white/5 rounded-2xl border border-white/5 shadow-inner min-h-[200px] flex items-center justify-center">
+                        <p class="text-gray-300 italic leading-relaxed">
+                            (Las letras estarán disponibles pronto)<br>
+                            Disfruta del ritmo de la cumbia sureña...<br>
+                            🎵 💃 🕺 🎵
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Comments View (Hidden by default) -->
+                <div id="view-comments" class="hidden space-y-4 animate-fade-in">
+                    <div class="bg-white/5 p-4 rounded-xl border border-white/5">
+                        <div class="flex items-center gap-3 mb-2">
+                            <div class="w-8 h-8 bg-purple-500 rounded-full flex items-center justify-center font-bold">A</div>
+                            <div>
+                                <p class="text-sm font-bold">Ana Pérez</p>
+                                <p class="text-xs text-gray-400">Hace 2 horas</p>
+                            </div>
+                        </div>
+                        <p class="text-sm text-gray-200">¡Qué buena cumbia! Saludos desde Malalhue 😍</p>
+                        <div class="flex gap-4 mt-2 text-xs text-gray-400">
+                            <span class="hover:text-white cursor-pointer">Me gusta</span>
+                            <span class="hover:text-white cursor-pointer">Responder</span>
+                        </div>
+                    </div>
+
+                    <div class="bg-white/5 p-4 rounded-xl border border-white/5">
+                        <div class="flex items-center gap-3 mb-2">
+                            <div class="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center font-bold">J</div>
+                            <div>
+                                <p class="text-sm font-bold">Juan Carlos</p>
+                                <p class="text-xs text-gray-400">Hace 1 día</p>
+                            </div>
+                        </div>
+                        <p class="text-sm text-gray-200">Grande Grupo Erupción, los mejores temas 🎸🎹</p>
+                    </div>
+                    
+                    <button class="w-full py-3 bg-white/10 rounded-xl text-sm font-semibold hover:bg-white/20 transition">Escribir un comentario...</button>
+                </div>
             </div>
         </div>
+
+        <!-- Custom Toast Notification -->
+        <div id="toast" class="absolute top-4 left-1/2 transform -translate-x-1/2 bg-red-600 text-white px-4 py-2 rounded-full shadow-xl text-sm font-semibold opacity-0 transition-opacity duration-300 pointer-events-none z-50">
+            Mensaje
+        </div>
+
+        <!-- Audio Element (Hidden) -->
+        <audio id="audio-player"></audio>
     </div>
-
-    <!-- Lado Derecho: Lista de Canciones -->
-    <div class="w-full md:w-1/2 h-1/2 md:h-full bg-slate-900 border-l border-slate-800 flex flex-col">
-        <div class="p-6 border-b border-slate-800 bg-slate-900/90 backdrop-blur sticky top-0 z-20">
-            <h3 class="text-xl font-bold flex items-center gap-2">
-                <i class="fas fa-list text-red-500"></i> Al Calor de la Cumbia
-            </h3>
-            <p class="text-sm text-gray-500 mt-1">3 Canciones • Grupo Erupción</p>
-        </div>
-
-        <div class="overflow-y-auto flex-1 p-4">
-            <ul id="playlist" class="space-y-2">
-                <!-- La lista se genera con JS -->
-            </ul>
-        </div>
-        
-        <!-- Pie de marca -->
-        <div class="p-4 text-center text-xs text-gray-600 border-t border-slate-800">
-            Diseñado para Grupo Erupción
-        </div>
-    </div>
-
-    <!-- Elemento de Audio Oculto -->
-    <!-- Sin crossorigin para evitar problemas con redirecciones de Drive -->
-    <audio id="audio-player"></audio>
 
     <script>
-        // CONFIGURACIÓN DE LAS CANCIONES
-        // Enlaces directos extraídos de tu archivo de texto
-        const songs = [
-            {
-                title: "01. Eres Tú",
-                artist: "Grupo Erupción",
-                // ID: 18KAbYrPooXHLCloDmhyUPAcVketsk2ok
-                src: "https://drive.google.com/uc?export=download&id=18KAbYrPooXHLCloDmhyUPAcVketsk2ok", 
-                duration: "3:45"
-            },
-            {
-                title: "02. Tú y Yo",
-                artist: "Grupo Erupción",
-                // ID: 1pCUyCEZtPTnESy5L6OcH7GlK_s4i3kdS
-                src: "https://drive.google.com/uc?export=download&id=1pCUyCEZtPTnESy5L6OcH7GlK_s4i3kdS", 
-                duration: "3:12"
-            },
-            {
-                title: "03. Vete Vete",
-                artist: "Grupo Erupción",
-                // ID: 1YHhuo-tAR39pG3lpNEh1YxrJUqKxZzPk
-                src: "https://drive.google.com/uc?export=download&id=1YHhuo-tAR39pG3lpNEh1YxrJUqKxZzPk", 
-                duration: "4:05"
-            }
+        // Inicializar iconos
+        lucide.createIcons();
+
+        // Configuración del Repositorio
+        const REPO_URL = "https://raw.githubusercontent.com/soporteaiwis-lab/erupcion/main/";
+        
+        // Playlist Data
+        const playlist = [
+            { title: "Eres Tú", file: "01_ERES TU - Grupo Erupción.mp3" },
+            { title: "Tú y Yo", file: "02_TU Y YO - Grupo Erupción.mp3" },
+            { title: "Vete Vete", file: "03_VETE VETE - Grupo Erupción.mp3" },
+            { title: "Vuelve Pronto", file: "04_VUELVE PRONTO - Grupo Erupción.mp3" },
+            { title: "Nunca Más", file: "05_NUNCA MAS - Grupo Erupción.mp3" },
+            { title: "Perdóname Amor", file: "06_PERDONAME AMOR - Grupo Erupción.mp3" },
+            { title: "Te Amo", file: "07_TE AMO - Grupo Erupción.mp3" },
+            { title: "No Resistiré", file: "08_NO RESISTIRE - Grupo Erupción.mp3" },
+            { title: "Una Diosa", file: "09_UNA DIOSA- Grupo Erupción.mp3" },
+            { title: "Mi Reina", file: "10_MI REINA - Grupo Erupción.mp3" },
+            { title: "Chica Hermosa", file: "11_CHICA HERMOSA- Grupo Erupción.mp3" },
+            { title: "Mentirosa", file: "12_MENTIROSA - Grupo Erupción.mp3" }
         ];
 
-        let currentSongIndex = 0;
-        let isPlaying = false;
-
-        // Referencias al DOM
+        // Elementos del DOM
         const audio = document.getElementById('audio-player');
-        const playBtn = document.getElementById('play-btn');
+        const playBtn = document.getElementById('play-pause-btn');
         const playIcon = document.getElementById('play-icon');
         const prevBtn = document.getElementById('prev-btn');
         const nextBtn = document.getElementById('next-btn');
-        const progressBar = document.getElementById('progress-bar');
-        const currentTimeEl = document.getElementById('current-time');
-        const durationEl = document.getElementById('duration');
-        const titleEl = document.getElementById('current-title');
-        const artistEl = document.getElementById('current-artist');
-        const diskArt = document.getElementById('disk-art');
-        const playlistEl = document.getElementById('playlist');
-        const statusMsg = document.getElementById('status-msg');
+        const progress = document.getElementById('progress-bar');
+        const currTimeEl = document.getElementById('current-time');
+        const durTimeEl = document.getElementById('duration');
+        const trackTitle = document.getElementById('track-title');
+        const albumCover = document.getElementById('album-cover');
+        const playlistContainer = document.getElementById('playlist-container');
+        const likeBtn = document.getElementById('like-btn');
+        const likeIcon = likeBtn.querySelector('i');
 
-        // Inicializar Playlist
-        function initPlaylist() {
-            playlistEl.innerHTML = '';
-            songs.forEach((song, index) => {
-                const li = document.createElement('li');
-                li.className = `p-3 rounded-lg flex items-center justify-between cursor-pointer transition hover:bg-slate-800 group ${index === currentSongIndex ? 'bg-slate-800 border-l-4 border-red-500' : ''}`;
-                li.onclick = () => loadSong(index, true);
+        let songIndex = 0;
+        let isPlaying = false;
 
-                // Indicador visual de reproducción (barritas)
-                const playingIndicator = index === currentSongIndex ? 
-                    `<div class="playing-indicator flex gap-1 h-3 items-end mr-3">
-                        <div class="bar w-1 bg-red-500"></div>
-                        <div class="bar w-1 bg-red-500"></div>
-                        <div class="bar w-1 bg-red-500"></div>
-                     </div>` : 
-                    `<span class="text-gray-500 w-8 text-center mr-2 text-sm group-hover:text-white">${index + 1}</span>`;
+        // Cargar canción inicial
+        loadSong(playlist[songIndex]);
 
-                li.innerHTML = `
-                    <div class="flex items-center overflow-hidden">
-                        ${playingIndicator}
-                        <div class="flex flex-col">
-                            <span class="font-medium text-sm text-gray-200 group-hover:text-white truncate">${song.title}</span>
-                            <span class="text-xs text-gray-500">${song.artist}</span>
-                        </div>
+        // Generar lista de reproducción visual
+        playlist.forEach((song, index) => {
+            const item = document.createElement('div');
+            item.className = `flex items-center justify-between p-3 rounded-lg hover:bg-white/10 cursor-pointer transition group ${index === 0 ? 'bg-white/10' : ''}`;
+            item.onclick = () => playSpecificSong(index);
+            item.innerHTML = `
+                <div class="flex items-center gap-3">
+                    <span class="text-gray-500 font-mono text-xs w-4">${index + 1}</span>
+                    <div class="text-sm">
+                        <p class="text-white font-medium ${index === 0 ? 'text-red-400' : 'group-hover:text-red-400'} transition-colors">${song.title}</p>
+                        <p class="text-xs text-gray-500">Grupo Erupción</p>
                     </div>
-                    <span class="text-xs text-gray-500 group-hover:text-gray-300">
-                        ${index === currentSongIndex && isPlaying ? '<i class="fas fa-volume-up"></i>' : '<i class="fas fa-play opacity-0 group-hover:opacity-100"></i>'}
-                    </span>
-                `;
-                playlistEl.appendChild(li);
+                </div>
+                ${index === 0 ? '<i data-lucide="bar-chart-2" class="w-4 h-4 text-red-500 animate-pulse"></i>' : ''}
+            `;
+            playlistContainer.appendChild(item);
+        });
+        lucide.createIcons();
+
+        // Funciones del Reproductor
+        function loadSong(song) {
+            trackTitle.innerText = song.title;
+            // Codificar URL para manejar espacios y caracteres especiales
+            const encodedFile = encodeURIComponent(song.file).replace(/%20/g, '%20'); 
+            audio.src = REPO_URL + encodedFile;
+            
+            // Actualizar resaltado en lista
+            updatePlaylistHighlight();
+        }
+
+        function playSong() {
+            isPlaying = true;
+            playBtn.innerHTML = '<i data-lucide="pause" class="w-8 h-8 fill-current ml-0"></i>';
+            lucide.createIcons();
+            albumCover.classList.remove('spin-paused');
+            audio.play().catch(error => {
+                showToast("Error al cargar audio. Verifica conexión.");
+                console.error("Error playing:", error);
             });
         }
 
-        // Cargar canción
-        function loadSong(index, autoPlay = false) {
-            currentSongIndex = index;
-            const song = songs[index];
-            
-            titleEl.innerText = song.title;
-            artistEl.innerText = song.artist;
-            statusMsg.innerText = "Conectando con Google Drive...";
-            
-            // Asignar fuente
-            audio.src = song.src;
-            
-            // Resetear progreso
-            progressBar.value = 0;
-            currentTimeEl.innerText = "0:00";
-            
-            // Actualizar estilo visual de la lista
-            initPlaylist();
-
-            if (autoPlay) {
-                // Pequeño delay para permitir la conexión
-                setTimeout(() => playSong(), 500);
-            } else {
-                pauseSongUi();
-                statusMsg.innerText = "Listo. Pulsa Play.";
-            }
-        }
-
-        // Reproducir
-        function playSong() {
-            const playPromise = audio.play();
-
-            if (playPromise !== undefined) {
-                playPromise.then(_ => {
-                    // Reproducción exitosa
-                    isPlaying = true;
-                    statusMsg.innerText = "Reproduciendo";
-                    playIcon.classList.remove('fa-play');
-                    playIcon.classList.remove('ml-1'); 
-                    playIcon.classList.add('fa-pause');
-                    diskArt.classList.remove('paused-animation');
-                    initPlaylist(); 
-                })
-                .catch(error => {
-                    console.error("Error al reproducir:", error);
-                    isPlaying = false;
-                    // Mensaje amigable para el error de sandbox
-                    statusMsg.innerText = "⚠️ Drive bloqueó la vista previa. Descarga el archivo para escuchar.";
-                    pauseSongUi();
-                });
-            }
-        }
-
-        // Función solo para UI de pausa
-        function pauseSongUi() {
-            playIcon.classList.add('fa-play');
-            playIcon.classList.add('ml-1');
-            playIcon.classList.remove('fa-pause');
-            diskArt.classList.add('paused-animation');
-        }
-
-        // Pausar Real
         function pauseSong() {
             isPlaying = false;
+            playBtn.innerHTML = '<i data-lucide="play" class="w-8 h-8 fill-current ml-1"></i>';
+            lucide.createIcons();
+            albumCover.classList.add('spin-paused');
             audio.pause();
-            statusMsg.innerText = "Pausado";
-            pauseSongUi();
-            initPlaylist();
         }
 
-        // Eventos de botones
-        playBtn.addEventListener('click', () => {
-            if (isPlaying) {
-                pauseSong();
-            } else {
-                playSong();
+        function prevSong() {
+            songIndex--;
+            if (songIndex < 0) {
+                songIndex = playlist.length - 1;
             }
-        });
+            loadSong(playlist[songIndex]);
+            if(isPlaying) playSong();
+            else playSong(); // Auto-play al cambiar
+        }
 
-        prevBtn.addEventListener('click', () => {
-            let newIndex = currentSongIndex - 1;
-            if (newIndex < 0) newIndex = songs.length - 1;
-            loadSong(newIndex, true);
-        });
+        function nextSong() {
+            songIndex++;
+            if (songIndex > playlist.length - 1) {
+                songIndex = 0;
+            }
+            loadSong(playlist[songIndex]);
+            if(isPlaying) playSong();
+            else playSong(); // Auto-play al cambiar
+        }
 
-        nextBtn.addEventListener('click', () => {
-            let newIndex = currentSongIndex + 1;
-            if (newIndex > songs.length - 1) newIndex = 0;
-            loadSong(newIndex, true);
-        });
+        function playSpecificSong(index) {
+            songIndex = index;
+            loadSong(playlist[songIndex]);
+            playSong();
+        }
 
-        // Manejo de errores de Audio
-        audio.addEventListener('error', function(e) {
-            console.log("Error de audio detectado. Código:", audio.error ? audio.error.code : 'Desconocido');
-            statusMsg.innerText = "⚠️ Error: Descarga el HTML para reproducir.";
-            pauseSongUi();
-        });
-
-        audio.addEventListener('waiting', () => {
-            statusMsg.innerText = "Cargando...";
-        });
-
-        audio.addEventListener('playing', () => {
-            statusMsg.innerText = "Reproduciendo";
-        });
-
-        // Actualizar barra de progreso
-        audio.addEventListener('timeupdate', (e) => {
+        function updateProgress(e) {
             const { duration, currentTime } = e.srcElement;
-            if (duration && !isNaN(duration) && isFinite(duration)) {
-                const progressPercent = (currentTime / duration) * 100;
-                progressBar.value = progressPercent;
-                
-                const durationMinutes = Math.floor(duration / 60);
-                let durationSeconds = Math.floor(duration % 60);
-                if (durationSeconds < 10) durationSeconds = `0${durationSeconds}`;
-                
-                const currentMinutes = Math.floor(currentTime / 60);
-                let currentSeconds = Math.floor(currentTime % 60);
-                if (currentSeconds < 10) currentSeconds = `0${currentSeconds}`;
+            const progressPercent = (currentTime / duration) * 100;
+            progress.value = progressPercent || 0;
+            
+            // Tiempo actual
+            let min = Math.floor(currentTime / 60);
+            let sec = Math.floor(currentTime % 60);
+            if(sec < 10) sec = '0' + sec;
+            currTimeEl.innerText = `${min}:${sec}`;
 
-                currentTimeEl.innerText = `${currentMinutes}:${currentSeconds}`;
-                durationEl.innerText = `${durationMinutes}:${durationSeconds}`;
+            // Duración total
+            if(duration) {
+                let minD = Math.floor(duration / 60);
+                let secD = Math.floor(duration % 60);
+                if(secD < 10) secD = '0' + secD;
+                durTimeEl.innerText = `${minD}:${secD}`;
             }
-        });
+        }
 
-        // Click en la barra de progreso
-        progressBar.addEventListener('input', () => {
+        function setProgress(e) {
+            const width = this.value;
             const duration = audio.duration;
-            if (duration && !isNaN(duration) && isFinite(duration)) {
-                audio.currentTime = (progressBar.value * duration) / 100;
+            audio.currentTime = (width / 100) * duration;
+        }
+
+        function updatePlaylistHighlight() {
+            const items = playlistContainer.children;
+            for(let i=0; i<items.length; i++) {
+                if(i === songIndex) {
+                    items[i].classList.add('bg-white/10');
+                    items[i].querySelector('p').classList.add('text-red-400');
+                    // Añadir icono indicador si no existe
+                    if(!items[i].querySelector('.animate-pulse')) {
+                        items[i].innerHTML = items[i].innerHTML.replace('</div>', '</div><i data-lucide="bar-chart-2" class="w-4 h-4 text-red-500 animate-pulse"></i>');
+                        lucide.createIcons();
+                    }
+                } else {
+                    items[i].classList.remove('bg-white/10');
+                    items[i].querySelector('p').classList.remove('text-red-400');
+                    // Remover icono
+                    const icon = items[i].querySelector('.animate-pulse');
+                    if(icon) icon.remove();
+                }
+            }
+        }
+
+        // Manejador de Tabs
+        function switchTab(tabName) {
+            const views = ['playlist', 'lyrics', 'comments'];
+            const tabs = ['tab-playlist', 'tab-lyrics', 'tab-comments'];
+
+            views.forEach(v => {
+                const el = document.getElementById('view-' + v);
+                if(v === tabName) {
+                    el.classList.remove('hidden');
+                } else {
+                    el.classList.add('hidden');
+                }
+            });
+
+            tabs.forEach(t => {
+                const btn = document.getElementById(t);
+                if(t === 'tab-' + tabName) {
+                    btn.classList.remove('bg-white/10', 'text-gray-300');
+                    btn.classList.add('bg-red-600', 'text-white');
+                } else {
+                    btn.classList.add('bg-white/10', 'text-gray-300');
+                    btn.classList.remove('bg-red-600', 'text-white');
+                }
+            });
+        }
+
+        // Like Button Logic
+        let liked = false;
+        likeBtn.addEventListener('click', () => {
+            liked = !liked;
+            if(liked) {
+                likeIcon.classList.add('text-red-500', 'fill-current');
+                likeIcon.classList.remove('text-gray-400');
+                showToast("¡Añadido a Me Gusta!");
+            } else {
+                likeIcon.classList.remove('text-red-500', 'fill-current');
+                likeIcon.classList.add('text-gray-400');
             }
         });
 
-        // Al terminar una canción, pasar a la siguiente
-        audio.addEventListener('ended', () => {
-            nextBtn.click();
+        // Toast Notification
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            toast.innerText = msg;
+            toast.classList.remove('opacity-0');
+            setTimeout(() => {
+                toast.classList.add('opacity-0');
+            }, 3000);
+        }
+
+        // Event Listeners
+        playBtn.addEventListener('click', () => {
+            isPlaying ? pauseSong() : playSong();
         });
 
-        // Cargar primera canción al inicio
-        loadSong(0, false);
+        prevBtn.addEventListener('click', prevSong);
+        nextBtn.addEventListener('click', nextSong);
+        audio.addEventListener('timeupdate', updateProgress);
+        audio.addEventListener('ended', nextSong);
+        progress.addEventListener('input', setProgress);
+
+        // Error handling para audio
+        audio.addEventListener('error', (e) => {
+            console.error("Error loading audio", e);
+            showToast("Error: No se pudo cargar el audio del servidor.");
+            pauseSong();
+        });
 
     </script>
 </body>
