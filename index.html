@@ -3,647 +3,489 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>AI Wis Music - Documental Interactivo</title>
+    <title>Grupo Erupción - Experience</title>
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700;900&family=Space+Grotesk:wght@300;500;700&family=Share+Tech+Mono&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
+    <!-- Fonts: Playfair Display (Elegancia) & Montserrat (Modernidad) -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
     
     <style>
+        :root {
+            --primary: #c0392b; /* Rojo Intenso */
+            --gold: #d4af37;    /* Dorado Clásico */
+            --dark: #0a0a0a;
+        }
+
         body {
             font-family: 'Montserrat', sans-serif;
-            background-color: #000;
+            background-color: var(--dark);
             color: white;
-            overflow: hidden;
-            perspective: 1000px;
+            overflow: hidden; /* Evitar scroll en body para la experiencia "app" */
         }
 
-        .tech-font { font-family: 'Space Grotesk', sans-serif; }
-        .data-font { font-family: 'Share Tech Mono', monospace; }
-        .hud-font { font-family: 'Rajdhani', sans-serif; }
-
-        /* --- FONDO ETERNO --- */
-        .deep-space-bg {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: radial-gradient(circle at 50% 50%, #1a0505 0%, #000000 90%);
-            z-index: -3;
-        }
-
-        .nebula-pulse {
-            position: absolute;
-            top: 50%; left: 50%;
-            width: 200%; height: 200%;
-            transform: translate(-50%, -50%);
-            background: radial-gradient(circle, rgba(220, 38, 38, 0.15) 0%, transparent 60%);
-            animation: breathe 12s infinite ease-in-out;
-            z-index: -2;
-        }
-
-        @keyframes breathe { 0%, 100% { opacity: 0.4; transform: translate(-50%, -50%) scale(1); } 50% { opacity: 0.7; transform: translate(-50%, -50%) scale(1.1); } }
-
-        /* --- TARJETA FLIP 3D --- */
-        .media-container {
-            perspective: 1500px;
-            width: 100%;
-            max-width: 380px; /* Más ancho para lectura */
-            aspect-ratio: 1/1.1; 
-            margin: 0 auto;
-            position: relative;
-            z-index: 10;
+        h1, h2, h3, .serif-font {
+            font-family: 'Playfair Display', serif;
         }
         
-        .flipper {
-            position: relative;
-            width: 100%;
-            height: 100%;
-            transition: transform 0.6s cubic-bezier(0.4, 0.0, 0.2, 1);
-            transform-style: preserve-3d;
-        }
-        
-        .media-container.show-gem .flipper {
-            transform: rotateY(180deg);
-        }
-        
-        .front, .back {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            backface-visibility: hidden;
-            border-radius: 24px;
-            overflow: hidden;
-            box-shadow: 0 0 40px rgba(0,0,0,0.8);
-            border: 1px solid rgba(255,255,255,0.08);
-        }
+        /* Ocultar scrollbar */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
-        /* --- FRONT: EL DISCO --- */
-        .front {
-            background: #050505;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
+        /* Sliders personalizados */
+        input[type=range] {
+            -webkit-appearance: none;
+            background: transparent;
         }
-        
-        .reactor-ring {
-            position: absolute;
-            border-radius: 50%;
-            border: 2px solid transparent;
-            border-top-color: #ef4444;
-            border-bottom-color: #ef4444;
-            animation: spin-reactor 4s linear infinite;
-            box-shadow: 0 0 15px rgba(239, 68, 68, 0.4);
-        }
-        .reactor-core {
-            width: 130px; height: 130px;
-            background: radial-gradient(circle, #ef4444 0%, #7f1d1d 60%, black 100%);
-            border-radius: 50%;
-            box-shadow: 0 0 50px rgba(239, 68, 68, 0.6);
-            display: flex; items-center; justify-center;
-            animation: pulse-core 2s infinite alternate;
-        }
-        
-        @keyframes spin-reactor { to { transform: rotate(360deg); } }
-        @keyframes pulse-core { from { transform: scale(1); filter: brightness(1); } to { transform: scale(1.05); filter: brightness(1.3); } }
-
-        /* --- BACK: PANTALLA DE CINE (HISTORIA) --- */
-        .back {
-            transform: rotateY(180deg);
-            background: linear-gradient(180deg, #0f0505 0%, #000000 100%);
-            border: 2px solid rgba(239, 68, 68, 0.3);
-            box-shadow: 0 0 30px rgba(239, 68, 68, 0.15) inset;
-        }
-
-        /* Texto Biográfico Grande */
-        .bio-text {
-            font-size: 1.1rem; /* Letra más grande */
-            line-height: 1.5;
-            color: #fff;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.8);
-            padding-right: 4px;
-        }
-        .highlight {
-            color: #fca5a5;
-            font-weight: 800;
-            text-transform: uppercase;
-        }
-
-        /* --- BOTONES DE MENÚ --- */
-        .nav-pill {
-            flex: 1;
-            text-align: center;
-            padding: 12px;
-            border-radius: 12px;
-            font-weight: 800;
-            text-transform: uppercase;
-            font-size: 0.8rem;
-            letter-spacing: 1px;
-            transition: all 0.3s;
-            border: 1px solid transparent;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-        }
-        .nav-pill.active {
-            background: #ef4444;
-            color: white;
-            box-shadow: 0 0 20px rgba(239, 68, 68, 0.4);
-        }
-        .nav-pill.inactive {
-            background: rgba(255,255,255,0.05);
-            color: #888;
-            border-color: rgba(255,255,255,0.1);
-        }
-        .nav-pill.inactive:hover {
-            background: rgba(255,255,255,0.1);
-            color: white;
-        }
-
-        /* --- LISTA Y SCROLL --- */
-        .scroll-area { -webkit-overflow-scrolling: touch; scrollbar-width: none; }
-        .scroll-area::-webkit-scrollbar { display: none; }
-
-        .playlist-item {
-            position: relative;
-            padding: 16px;
-            border-bottom: 1px solid rgba(255,255,255,0.03);
-            transition: all 0.3s;
-        }
-        .playlist-item.active {
-            background: linear-gradient(90deg, rgba(220, 38, 38, 0.2), transparent);
-            border-left: 6px solid #ef4444;
-            padding-left: 20px;
-        }
-
-        /* Slider */
-        input[type=range] { -webkit-appearance: none; background: transparent; }
         input[type=range]::-webkit-slider-thumb {
-            -webkit-appearance: none; height: 16px; width: 16px; border-radius: 50%;
-            background: #fff; border: 2px solid #ef4444; margin-top: -7px;
-            box-shadow: 0 0 10px rgba(255, 255, 255, 1);
-            transition: transform 0.1s;
+            -webkit-appearance: none;
+            height: 14px;
+            width: 14px;
+            border-radius: 50%;
+            background: var(--gold);
+            margin-top: -6px;
+            box-shadow: 0 0 10px rgba(212, 175, 55, 0.5);
+            transition: transform 0.2s;
+        }
+        input[type=range]::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
         }
         input[type=range]::-webkit-slider-runnable-track {
-            width: 100%; height: 2px; background: rgba(255,255,255,0.2);
+            width: 100%;
+            height: 2px;
+            cursor: pointer;
+            background: rgba(255,255,255,0.2);
+        }
+
+        /* Animaciones del Disco */
+        .spin-slow { animation: spin 12s linear infinite; }
+        .spin-paused { animation-play-state: paused; }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+
+        /* Efecto Vinilo Premium */
+        .vinyl-grooves {
+            background: 
+                radial-gradient(circle, #111 35%, transparent 36%),
+                repeating-radial-gradient(#1a1a1a 0, #1a1a1a 2px, #000 3px, #000 4px);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.8);
+        }
+        .vinyl-reflection {
+            background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, transparent 50%, rgba(255,255,255,0.05) 100%);
+        }
+
+        /* Fondo Animado "Stage Lights" */
+        .stage-bg {
+            background: radial-gradient(circle at 50% 0%, #4a0e0e 0%, #0a0a0a 70%);
+            animation: pulse-light 10s infinite alternate;
+        }
+        @keyframes pulse-light {
+            0% { opacity: 0.8; }
+            100% { opacity: 1; filter: hue-rotate(10deg); }
+        }
+
+        /* Visualizador Simulado */
+        .visualizer-bar {
+            width: 4px;
+            background: var(--gold);
+            border-radius: 2px;
+            animation: bounce 1s infinite ease-in-out;
+            opacity: 0.6;
+        }
+        @keyframes bounce {
+            0%, 100% { height: 10px; }
+            50% { height: 30px; }
+        }
+
+        /* Efectos de Partículas (Corazones flotantes) */
+        .floater {
+            position: absolute;
+            animation: floatUp 3s linear forwards;
+            pointer-events: none;
+            opacity: 0;
+        }
+        @keyframes floatUp {
+            0% { transform: translateY(0) scale(0.5); opacity: 1; }
+            100% { transform: translateY(-200px) scale(1.5); opacity: 0; }
+        }
+
+        /* Caja de Chat IA */
+        .ai-box {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
         }
     </style>
 </head>
-<body class="flex flex-col h-[100dvh] relative text-white">
+<body class="flex justify-center items-center min-h-screen bg-black stage-bg relative">
 
-    <!-- AMBIENTE -->
-    <div class="deep-space-bg"></div>
-    <div class="nebula-pulse"></div>
-
-    <!-- HEADER -->
-    <header class="h-16 flex items-center justify-between px-6 shrink-0 z-30 bg-black/80 backdrop-blur-xl border-b border-white/5">
-        <div class="flex items-center gap-3">
-            <div class="w-10 h-10 bg-gradient-to-br from-red-600 to-black rounded-lg border border-red-500/50 flex items-center justify-center">
-                <i data-lucide="mic-2" class="w-6 h-6 text-white"></i>
-            </div>
-            <div>
-                <h1 class="font-bold text-xl leading-none tracking-tighter text-white tech-font">AI WIS <span class="text-red-500">MUSIC</span></h1>
-                <p class="text-[9px] text-gray-400 uppercase tracking-widest font-bold hud-font">Erupción: El Documental</p>
-            </div>
-        </div>
-        <div class="flex items-center gap-2">
-            <div class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></div>
-            <span class="text-[9px] font-bold text-red-500">EN VIVO</span>
-        </div>
-    </header>
-
-    <!-- MENÚ VISUAL GRANDE -->
-    <div class="px-6 py-4 shrink-0 z-30">
-        <div class="flex gap-4 p-1 bg-white/5 rounded-2xl backdrop-blur-sm border border-white/5">
-            <button onclick="setMode('audio')" id="btn-audio" class="nav-pill active">
-                <i data-lucide="disc-3" class="w-4 h-4"></i> PORTADA
-            </button>
-            <button onclick="setMode('history')" id="btn-history" class="nav-pill inactive">
-                <i data-lucide="scroll-text" class="w-4 h-4"></i> HISTORIA
-            </button>
-        </div>
+    <!-- Partículas de fondo (ambiente) -->
+    <div class="absolute inset-0 overflow-hidden pointer-events-none">
+        <div class="absolute top-1/4 left-1/4 w-64 h-64 bg-red-900/20 rounded-full blur-[100px]"></div>
+        <div class="absolute bottom-1/4 right-1/4 w-80 h-80 bg-orange-900/10 rounded-full blur-[120px]"></div>
     </div>
 
-    <!-- ÁREA PRINCIPAL -->
-    <main class="flex-1 overflow-y-auto scroll-area pb-48 relative">
+    <!-- Contenedor Principal (Estilo Premium Glass) -->
+    <div class="w-full max-w-md h-[100dvh] md:h-[90vh] md:max-h-[850px] md:rounded-[2.5rem] bg-black/40 backdrop-blur-2xl relative shadow-2xl flex flex-col border border-white/10 overflow-hidden z-10 transition-all duration-500" id="main-container">
         
-        <!-- VISUALIZADOR PRINCIPAL -->
-        <div class="w-full px-4 mb-2">
-            <div id="media-flip-container" class="media-container">
-                <div class="flipper">
+        <!-- Top Bar: Venue Header -->
+        <div class="px-6 py-5 flex justify-between items-center z-20 bg-gradient-to-b from-black/60 to-transparent">
+            <button class="p-2 rounded-full hover:bg-white/10 transition"><i data-lucide="chevron-down" class="text-white w-5 h-5"></i></button>
+            <div class="text-center">
+                <span class="text-[10px] tracking-[0.3em] text-yellow-500 uppercase font-bold mb-1 block">En Vivo Desde</span>
+                <h2 class="text-sm font-semibold text-white tracking-widest uppercase">Escenario Virtual</h2>
+            </div>
+            <button class="p-2 rounded-full hover:bg-white/10 transition"><i data-lucide="more-vertical" class="text-white w-5 h-5"></i></button>
+        </div>
+
+        <!-- Scrollable Content -->
+        <div class="flex-1 overflow-y-auto no-scrollbar relative flex flex-col" id="scroll-area">
+            
+            <!-- Vinyl & Visualizer Section -->
+            <div class="relative w-full aspect-square max-h-[380px] flex items-center justify-center mt-2 mb-4 shrink-0">
+                
+                <!-- Simulated Visualizer Ring (Solo visible al reproducir) -->
+                <div id="visualizer-ring" class="absolute w-[280px] h-[280px] rounded-full border border-white/5 flex items-center justify-center opacity-0 transition-opacity duration-700">
+                    <div class="absolute inset-0 rounded-full border border-yellow-500/20 animate-pulse"></div>
+                    <div class="absolute inset-2 rounded-full border border-red-500/10 spin-slow" style="animation-direction: reverse;"></div>
+                </div>
+
+                <!-- Disco de Vinilo -->
+                <div id="album-cover" class="w-64 h-64 rounded-full relative flex items-center justify-center overflow-hidden vinyl-grooves spin-slow spin-paused transition-all duration-700 shadow-2xl border border-gray-800">
+                    <div class="vinyl-reflection absolute inset-0 z-20 pointer-events-none"></div>
+                    <!-- Etiqueta del Disco -->
+                    <div class="absolute w-24 h-24 bg-gradient-to-br from-red-700 to-red-900 rounded-full flex items-center justify-center border-[3px] border-black z-10 shadow-inner">
+                        <div class="text-center">
+                            <p class="text-[8px] font-bold text-yellow-400 uppercase tracking-widest">Erupción</p>
+                            <i data-lucide="music" class="text-black/50 w-6 h-6 mx-auto mt-1"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Song Info & AI Assistant -->
+            <div class="px-8 space-y-6">
+                
+                <!-- Title & Artist -->
+                <div class="flex justify-between items-start">
+                    <div class="space-y-1">
+                        <h1 id="track-title" class="text-3xl text-white font-bold leading-tight serif-font drop-shadow-lg">Selecciona Canción</h1>
+                        <p class="text-red-400 text-sm font-medium tracking-wide uppercase">Grupo Erupción</p>
+                    </div>
+                    <button id="like-btn" class="p-3 bg-white/5 rounded-full backdrop-blur-sm border border-white/10 hover:bg-white/10 transition active:scale-90 group">
+                        <i data-lucide="heart" class="text-gray-300 w-6 h-6 group-hover:text-red-500 transition-colors" id="like-icon"></i>
+                    </button>
+                </div>
+
+                <!-- AI Agent Message Box -->
+                <div class="ai-box rounded-2xl p-4 flex gap-4 items-start animate-fade-in relative overflow-hidden group">
+                    <div class="absolute top-0 left-0 w-1 h-full bg-gradient-to-b from-yellow-500 to-red-600"></div>
+                    <div class="shrink-0 relative">
+                        <div class="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-lg">
+                            <i data-lucide="bot" class="text-white w-5 h-5"></i>
+                        </div>
+                        <div class="absolute -bottom-1 -right-1 w-3 h-3 bg-green-500 rounded-full border-2 border-black"></div>
+                    </div>
+                    <div>
+                        <p class="text-[10px] font-bold text-yellow-500 uppercase tracking-widest mb-1">Tu Host Virtual</p>
+                        <p id="ai-message" class="text-sm text-gray-200 leading-relaxed font-light">
+                            ¡Bienvenido al auditorio virtual! Soy tu asistente. Prepárate para sentir el calor de la cumbia sureña. 🎵
+                        </p>
+                    </div>
+                    <!-- Efecto brillo IA -->
+                    <div class="absolute -top-10 -right-10 w-20 h-20 bg-white/10 rounded-full blur-xl group-hover:bg-white/20 transition duration-500"></div>
+                </div>
+
+                <!-- Credits (Minimalist) -->
+                <div class="flex flex-wrap gap-2 text-xs text-gray-500 justify-center font-mono">
+                    <span class="px-2 py-1 bg-white/5 rounded">🎹 Vildo Salazar</span>
+                    <span class="px-2 py-1 bg-white/5 rounded">🎸 Heraldo Villablanca</span>
+                    <span class="px-2 py-1 bg-white/5 rounded">🎸 Ruben Salazar</span>
+                </div>
+            </div>
+
+            <!-- Espaciador para scroll -->
+            <div class="h-8"></div>
+        </div>
+
+        <!-- Controls Section (Fixed Bottom) -->
+        <div class="bg-gradient-to-t from-black via-black/95 to-transparent pt-10 pb-8 px-8 z-30">
+            
+            <!-- Progress -->
+            <div class="mb-6 group">
+                <input type="range" id="progress-bar" value="0" class="w-full mb-2">
+                <div class="flex justify-between text-[10px] font-medium text-gray-400 tracking-wider">
+                    <span id="current-time">0:00</span>
+                    <span id="duration">0:00</span>
+                </div>
+            </div>
+
+            <!-- Main Buttons -->
+            <div class="flex justify-between items-center mb-6">
+                <button class="text-gray-500 hover:text-white transition"><i data-lucide="shuffle" class="w-5 h-5"></i></button>
+                
+                <div class="flex items-center gap-6">
+                    <button id="prev-btn" class="text-white hover:text-yellow-400 transition transform active:scale-90">
+                        <i data-lucide="skip-back" class="w-8 h-8 fill-white/10"></i>
+                    </button>
                     
-                    <!-- FRENTE: PORTADA -->
-                    <div class="front group">
-                        <!-- Capas de Fondo -->
-                        <div class="absolute inset-0 bg-[url('https://source.unsplash.com/random/800x800/?concert,stage')] bg-cover bg-center opacity-40 mix-blend-overlay"></div>
-                        <div class="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/90"></div>
-                        
-                        <!-- Reactor Central -->
-                        <div class="relative z-10 flex items-center justify-center scale-110">
-                             <div class="reactor-ring" style="width: 240px; height: 240px; border-color: rgba(255,255,255,0.05); animation-duration: 10s;"></div>
-                             <div class="reactor-ring" style="width: 200px; height: 200px; border-top-color: #ef4444; border-bottom-color: transparent; animation-duration: 3s; border-width: 1px;"></div>
-                             
-                             <!-- Núcleo Brillante -->
-                             <div class="reactor-core flex items-center justify-center relative">
-                                 <i data-lucide="music" class="w-16 h-16 text-white relative z-20"></i>
-                                 <div class="absolute inset-0 rounded-full border border-white/30 animate-ping opacity-50"></div>
-                             </div>
-                        </div>
-
-                        <!-- Info Portada -->
-                        <div class="absolute bottom-8 left-0 right-0 text-center z-20 px-4">
-                            <h2 class="text-3xl font-bold text-white tech-font tracking-tight drop-shadow-lg leading-none mb-2" id="cover-title">Cargando...</h2>
-                            <span class="px-3 py-1 bg-red-600/20 border border-red-500/30 rounded-full text-xs text-red-300 font-bold uppercase tracking-wider">
-                                Grupo Erupción
-                            </span>
-                        </div>
-                    </div>
-
-                    <!-- REVERSO: HISTORIA (PANTALLA GRANDE) -->
-                    <div class="back relative flex flex-col p-6 overflow-hidden bg-black">
-                        <!-- Fondo Cine -->
-                        <div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/dark-matter.png')] opacity-30"></div>
-                        
-                        <!-- Header Historia -->
-                        <div class="flex justify-between items-center mb-4 z-10 border-b border-red-500/30 pb-3">
-                            <div class="flex items-center gap-2">
-                                <i data-lucide="film" class="w-5 h-5 text-red-500"></i>
-                                <span class="text-xs text-red-400 uppercase tracking-widest font-bold">Capítulo de Vida</span>
-                            </div>
-                            <span class="text-xs text-gray-400 font-mono" id="gem-year">1980</span>
-                        </div>
-
-                        <!-- Contenido Dinámico -->
-                        <div class="flex-1 z-10 overflow-hidden relative flex flex-col">
-                            <!-- Tags Grandes -->
-                            <div class="flex flex-wrap gap-2 mb-4" id="gem-tags">
-                                <!-- JS inyectará tags aquí -->
-                            </div>
-
-                            <!-- Texto Historia Grande -->
-                            <div class="relative h-full overflow-y-auto pr-2 custom-scroll">
-                                <p id="gem-text" class="bio-text">
-                                    Cargando archivo...
-                                </p>
-                            </div>
-                        </div>
-                        
-                        <!-- Firma -->
-                        <div class="mt-4 pt-3 border-t border-white/10 flex justify-between opacity-50 text-[10px]">
-                            <span>ARCHIVO IA: RESTAURADO</span>
-                            <span>ARMIN SALAZAR</span>
-                        </div>
-                    </div>
+                    <button id="play-pause-btn" class="w-16 h-16 bg-white rounded-full flex items-center justify-center shadow-[0_0_20px_rgba(255,255,255,0.3)] hover:scale-105 active:scale-95 transition text-black relative overflow-hidden group">
+                        <div class="absolute inset-0 bg-gradient-to-br from-gray-100 to-gray-300"></div>
+                        <i data-lucide="play" class="w-7 h-7 fill-current relative z-10 ml-1" id="play-icon"></i>
+                    </button>
+                    
+                    <button id="next-btn" class="text-white hover:text-yellow-400 transition transform active:scale-90">
+                        <i data-lucide="skip-forward" class="w-8 h-8 fill-white/10"></i>
+                    </button>
                 </div>
-            </div>
-        </div>
 
-        <!-- LISTA DE REPRODUCCIÓN -->
-        <div class="mt-4 pb-10">
-            <div class="px-6 flex items-center justify-between mb-3">
-                <h3 class="text-xs font-bold text-gray-400 uppercase tracking-[0.2em] flex items-center gap-2">
-                    <i data-lucide="list-music" class="w-4 h-4"></i> Banda Sonora
-                </h3>
-            </div>
-            <div id="playlist-container" class="border-t border-white/5">
-                <!-- JS Generará esto -->
-            </div>
-        </div>
-        
-    </main>
-
-    <!-- PLAYER CONTROLS (FIXED BOTTOM) -->
-    <footer class="fixed bottom-0 left-0 right-0 z-40 bg-[#020202] border-t border-white/10 pb-8 pt-4 shadow-[0_-20px_60px_rgba(0,0,0,1)]">
-        
-        <!-- Barra Progreso -->
-        <div class="absolute top-0 left-0 right-0 -mt-1 h-2 group cursor-pointer z-50 hover:h-3 transition-all">
-            <div class="w-full h-full bg-gray-900 relative">
-                 <div id="progress-fill" class="h-full bg-gradient-to-r from-red-600 to-orange-500 shadow-[0_0_20px_#ef4444] absolute left-0 top-0 transition-all duration-100" style="width: 0%"></div>
-                 <input type="range" id="progress" value="0" min="0" max="100" class="w-full h-full opacity-0 cursor-pointer absolute top-0 left-0">
-            </div>
-        </div>
-
-        <div class="px-6 flex items-center justify-between mt-3">
-            <!-- Info -->
-            <div class="flex-1 pr-4 overflow-hidden">
-                <h2 id="player-title" class="text-lg font-bold text-white truncate tech-font">Selecciona Canción</h2>
-                <div class="flex items-center gap-1.5 mt-1">
-                    <span class="text-[9px] bg-red-900/30 text-red-400 px-1.5 py-0.5 rounded border border-red-500/20 font-bold uppercase">40 AÑOS</span>
-                    <span class="text-[10px] text-gray-400 uppercase tracking-widest truncate">Grupo Erupción</span>
-                </div>
-            </div>
-
-            <!-- Botones -->
-            <div class="flex items-center gap-5">
-                <button id="btn-prev" class="text-gray-500 hover:text-white transition active:scale-90 p-2"><i data-lucide="skip-back" class="w-8 h-8 fill-current"></i></button>
-                
-                <button id="btn-play" class="w-16 h-16 bg-white text-black rounded-full flex items-center justify-center hover:scale-105 active:scale-95 transition shadow-[0_0_25px_rgba(255,255,255,0.3)] border-4 border-gray-200 relative overflow-hidden group">
-                    <div class="absolute inset-0 bg-gradient-to-br from-gray-100 to-gray-400 opacity-50"></div>
-                    <i data-lucide="play" class="w-8 h-8 fill-current ml-1 relative z-10"></i>
+                <button class="text-gray-500 hover:text-white transition" onclick="triggerReaction()">
+                    <i data-lucide="message-circle-heart" class="w-5 h-5 text-red-500"></i>
                 </button>
-                
-                <button id="btn-next" class="text-gray-500 hover:text-white transition active:scale-90 p-2"><i data-lucide="skip-forward" class="w-8 h-8 fill-current"></i></button>
+            </div>
+
+            <!-- Bottom Drawer Trigger -->
+            <div class="flex justify-center">
+                <button onclick="toggleDrawer()" class="flex items-center gap-2 text-xs font-bold text-gray-500 hover:text-white transition uppercase tracking-widest group">
+                    <span>Playlist & Letras</span>
+                    <i data-lucide="chevron-up" class="w-4 h-4 group-hover:-translate-y-1 transition-transform"></i>
+                </button>
             </div>
         </div>
-    </footer>
 
-    <!-- AUDIO ENGINE -->
-    <audio id="audio-player" preload="metadata"></audio>
+        <!-- Drawer (Playlist/Lyrics) -->
+        <div id="drawer" class="absolute inset-0 top-[100%] bg-gray-900/95 backdrop-blur-xl z-40 transition-all duration-500 flex flex-col">
+            <div class="px-6 py-4 border-b border-white/10 flex justify-between items-center bg-black/50">
+                <h3 class="text-sm font-bold text-white uppercase tracking-wider">Contenido del Álbum</h3>
+                <button onclick="toggleDrawer()" class="p-2 hover:bg-white/10 rounded-full transition"><i data-lucide="x" class="w-5 h-5 text-white"></i></button>
+            </div>
+            
+            <div class="flex-1 overflow-y-auto p-4 space-y-1" id="playlist-container">
+                <!-- Songs Injected Here -->
+            </div>
+        </div>
+
+        <!-- Container para animaciones flotantes -->
+        <div id="reaction-container" class="absolute inset-0 pointer-events-none z-50 overflow-hidden"></div>
+        
+        <!-- Audio Hidden -->
+        <audio id="audio-player"></audio>
+        
+        <!-- Toast -->
+        <div id="toast" class="absolute top-10 left-1/2 -translate-x-1/2 bg-white/10 backdrop-blur-md border border-white/20 px-6 py-2 rounded-full text-xs font-bold text-white shadow-xl opacity-0 transition-opacity pointer-events-none z-50">
+            Notificación
+        </div>
+
+    </div>
 
     <script>
-        // --- BASE DE CONOCIMIENTO (HISTORIA FAMILIAR) ---
-        const REPO = "https://raw.githubusercontent.com/soporteaiwis-lab/erupcion/main/";
+        lucide.createIcons();
+        const REPO_URL = "https://raw.githubusercontent.com/soporteaiwis-lab/erupcion/main/";
         
-        const knowledgeBase = [
-            { 
-                file: "01_ERES TU - Grupo Erupción.mp3", title: "Eres Tú", 
-                context: {
-                    year: "INICIOS",
-                    tags: ["VILDO SALAZAR", "FUNDADOR", "TECLADOS"],
-                    story: "Aquí comienza todo. <span class='highlight'>Vildo Salazar</span>, mi padre, creó esta melodía con sus teclados que definieron el sonido de Malalhue. Al escucharla, vuelvo a ver sus manos sobre las teclas, construyendo el sueño de Erupción desde cero. Esta es la base de nuestro legado."
-                }
-            },
-            { 
-                file: "02_TU Y YO - Grupo Erupción.mp3", title: "Tú y Yo", 
-                context: {
-                    year: "EL RITMO",
-                    tags: ["RUBÉN SALAZAR", "TÍO", "BAJO"],
-                    story: "El corazón rítmico de la familia. Mi tío, <span class='highlight'>Rubén Salazar</span>, marcaba el pulso con su bajo en cada fiesta. Recuerdo verlo en el escenario, incansable, transmitiendo esa energía que hacía bailar a todos. La IA ha rescatado ese 'golpe' característico que llevaba en la sangre."
-                }
-            },
-            { 
-                file: "03_VETE VETE - Grupo Erupción.mp3", title: "Vete Vete", 
-                context: {
-                    year: "INFANCIA",
-                    tags: ["ARMIN", "ENSAYOS", "RECUERDOS"],
-                    story: "Crecí escuchando estos ensayos. Mientras otros niños jugaban, yo absorbía cada nota en el patio de casa. Este tema resonaba en las paredes de mi infancia. Rescatarlo hoy es como abrir una cápsula del tiempo a esos días felices."
-                }
-            },
-            { 
-                file: "04_VUELVE PRONTO - Grupo Erupción.mp3", title: "Vuelve Pronto", 
-                context: {
-                    year: "EL DEBUT",
-                    tags: ["FESTIVAL", "ARMIN 3 AÑOS", "ORIGEN"],
-                    story: "<span class='highlight'>Mi debut.</span> Tenía solo 3 años cuando me subieron al escenario en un festival comunal para cantar con ellos. Ahí, frente al público, con el micrófono en la mano junto a mi padre y mi tío, supe que mi vida sería la música."
-                }
-            },
-            { 
-                file: "05_NUNCA MAS - Grupo Erupción.mp3", title: "Nunca Más", 
-                context: {
-                    year: "40 AÑOS",
-                    tags: ["TRAYECTORIA", "FAMILIA", "HISTORIA"],
-                    story: "Más de 40 años de trayectoria se sienten en este ritmo. Erupción no fue solo un grupo, fue la banda sonora de generaciones en el sur de Chile. Esta canción representa la perseverancia de mi familia a través de las décadas."
-                }
-            },
-            { 
-                file: "06_PERDONAME AMOR - Grupo Erupción.mp3", title: "Perdóname Amor", 
-                context: {
-                    year: "EMOCIÓN",
-                    tags: ["VILDO & RUBÉN", "UNIÓN", "SENTIMIENTO"],
-                    story: "Las baladas siempre tenían un lugar especial. Ver a mi padre y a mi tío interpretar estos temas con tanto sentimiento me enseñó que la música es el lenguaje de las emociones. La tecnología hoy nos permite escuchar esa pasión con claridad cristalina."
-                }
-            },
-            { 
-                file: "07_TE AMO - Grupo Erupción.mp3", title: "Te Amo", 
-                context: {
-                    year: "GUITARRAS",
-                    tags: ["HERALDO", "SONIDO", "IDENTIDAD"],
-                    story: "El aporte de <span class='highlight'>Heraldo Villablanca</span> en las guitarras fue crucial. Su sonido le dio ese brillo característico a la cumbia de Erupción. Al restaurar esta pista, me aseguré de que cada punteo brillara como lo hacía en vivo."
-                }
-            },
-            { 
-                file: "08_NO RESISTIRE - Grupo Erupción.mp3", title: "No Resistiré", 
-                context: {
-                    year: "EN VIVO",
-                    tags: ["FIESTAS", "MALALHUE", "ENERGÍA"],
-                    story: "Este tema me transporta directamente a los gimnasios y salones de baile llenos. Es la energía pura de la fiesta sureña. Como productor, mi misión fue capturar esa euforia del directo que viví tantas veces desde el lado del escenario."
-                }
-            },
-            { 
-                file: "09_UNA DIOSA - Grupo Erupción.mp3", title: "Una Diosa", 
-                context: {
-                    year: "RESCATE",
-                    tags: ["IA", "ARMIN", "PRODUCCIÓN"],
-                    story: "Una joya que casi se pierde. Gracias a la Inteligencia Artificial, pude reconstruir partes de esta canción que el tiempo había borrado de las cintas. Es el ejemplo perfecto de cómo el futuro (mi presente) honra al pasado (mi herencia)."
-                }
-            },
-            { 
-                file: "10_MI REINA - Grupo Erupción.mp3", title: "Mi Reina", 
-                context: {
-                    year: "MAESTRÍA",
-                    tags: ["TECLADO", "SOLO", "PADRE"],
-                    story: "Dedicada a la maestría de mi padre, Vildo. Su solo de teclado aquí es legendario en la familia. Digitalizar esto es mi forma de decirle: 'Gracias, papá, por enseñarme el camino'."
-                }
-            },
-            { 
-                file: "11_CHICA HERMOSA- Grupo Erupción.mp3", title: "Chica Hermosa", 
-                context: {
-                    year: "ALEGRÍA",
-                    tags: ["PUEBLO", "BAILE", "RECUERDO"],
-                    story: "La canción de la alegría. Recuerda a todas esas caras felices en los festivales. Erupción no solo tocaba música, creaba momentos de felicidad para el pueblo. Ese es el verdadero legado que quiero preservar."
-                }
-            },
-            { 
-                file: "12_MENTIROSA - Grupo Erupción.mp3", title: "Mentirosa", 
-                context: {
-                    year: "FUTURO",
-                    tags: ["AI WIS MUSIC", "HOMENAJE", "CIERRE"],
-                    story: "Cerramos con ritmo y gratitud. De ese niño de 3 años en el escenario al programador que hoy crea este reproductor. <span class='highlight'>AI Wis Music</span> es mi regalo de vuelta a Vildo, Rubén y Heraldo. La leyenda de Erupción vive para siempre en la nube."
-                }
-            },
-            { 
-                file: "08_NO RESISTIRE (Version Bachata) - Grupo Erupción.mp3", title: "No Resistiré (Bachata)", 
-                context: {
-                    year: "BONUS TRACK",
-                    tags: ["SUNO AI", "EXPERIMENTO", "FUSIÓN"],
-                    story: "<span class='highlight'>MENSAJE FINAL:</span> 'No me resistiré ante la IA para crear música'. Esta versión bachata es la prueba viva. Si no la hago yo, la hace Suno. Es el puente entre el estilo clásico de Erupción y los algoritmos generativos. El futuro no se espera, se crea."
-                }
-            }
+        // Data Extendida con "Trivia IA"
+        const playlist = [
+            { title: "Eres Tú", file: "01_ERES TU - Grupo Erupción.mp3", ai: "Un inicio romántico. Esta melodía destaca el estilo único de los teclados de Vildo Salazar. 🎹" },
+            { title: "Tú y Yo", file: "02_TU Y YO - Grupo Erupción.mp3", ai: "Escucha el ritmo del bajo de Ruben. ¡Es el corazón de esta cumbia! ❤️" },
+            { title: "Vete Vete", file: "03_VETE VETE - Grupo Erupción.mp3", ai: "Un clásico del desamor bailable. Ideal para cantar a todo pulmón. 🎤" },
+            { title: "Vuelve Pronto", file: "04_VUELVE PRONTO - Grupo Erupción.mp3", ai: "La guitarra de Heraldo brilla en este tema con unos punteos inconfundibles. 🎸" },
+            { title: "Nunca Más", file: "05_NUNCA MAS - Grupo Erupción.mp3", ai: "Una promesa hecha canción. Siente la energía en cada compás. ✨" },
+            { title: "Perdóname Amor", file: "06_PERDONAME AMOR - Grupo Erupción.mp3", ai: "Una balada hecha cumbia. La letra llega profundo. 😢💃" },
+            { title: "Te Amo", file: "07_TE AMO - Grupo Erupción.mp3", ai: "¿Sabías que esta es una de las favoritas del público en vivo? 🙌" },
+            { title: "No Resistiré", file: "08_NO RESISTIRE - Grupo Erupción.mp3", ai: "¡Sube el volumen! El ritmo aquí se vuelve irresistible. 🔥" },
+            { title: "Una Diosa", file: "09_UNA DIOSA- Grupo Erupción.mp3", ai: "Dedicada a la belleza de la mujer chilena. 🇨🇱🌹" },
+            { title: "Mi Reina", file: "10_MI REINA - Grupo Erupción.mp3", ai: "Una cumbia real para bailar apretaditos. 👑" },
+            { title: "Chica Hermosa", file: "11_CHICA HERMOSA- Grupo Erupción.mp3", ai: "Energía pura para levantar el ánimo en cualquier fiesta. 🎉" },
+            { title: "Mentirosa", file: "12_MENTIROSA - Grupo Erupción.mp3", ai: "Cerramos el disco con este hit. ¡Nadie se queda sentado! 💃🕺" }
         ];
 
-        // --- DOM ELEMENTS ---
+        // Elements
         const audio = document.getElementById('audio-player');
-        const playBtn = document.getElementById('btn-play');
-        const playerTitle = document.getElementById('player-title');
-        const coverTitle = document.getElementById('cover-title');
-        const progressFill = document.getElementById('progress-fill');
-        const progressInput = document.getElementById('progress');
-        const container = document.getElementById('media-flip-container');
+        const playBtn = document.getElementById('play-pause-btn');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const albumCover = document.getElementById('album-cover');
+        const trackTitle = document.getElementById('track-title');
+        const aiMessage = document.getElementById('ai-message');
+        const progress = document.getElementById('progress-bar');
+        const currTimeEl = document.getElementById('current-time');
+        const durTimeEl = document.getElementById('duration');
+        const visualizerRing = document.getElementById('visualizer-ring');
         
-        // Menu Buttons
-        const btnAudio = document.getElementById('btn-audio');
-        const btnHistory = document.getElementById('btn-history');
-        
-        // Gem Elements
-        const gemYear = document.getElementById('gem-year');
-        const gemText = document.getElementById('gem-text');
-        const gemTags = document.getElementById('gem-tags');
-
-        let currentIndex = 0;
+        let songIndex = 0;
         let isPlaying = false;
 
-        // --- INIT ---
-        function init() {
-            renderPlaylist();
-            lucide.createIcons();
-            loadTrack(0, false);
+        // Init
+        loadSong(songIndex);
+        renderPlaylist();
+
+        // Functions
+        function loadSong(index) {
+            const song = playlist[index];
+            trackTitle.innerText = song.title;
+            // AI Agent Typing Effect Simulation
+            aiMessage.style.opacity = '0';
+            setTimeout(() => {
+                aiMessage.innerHTML = song.ai;
+                aiMessage.style.opacity = '1';
+                aiMessage.classList.add('animate-pulse'); // Subtle highlight
+                setTimeout(() => aiMessage.classList.remove('animate-pulse'), 1000);
+            }, 300);
+            
+            const encodedFile = encodeURIComponent(song.file).replace(/%20/g, '%20');
+            audio.src = REPO_URL + encodedFile;
+            
+            // Highlight in drawer
+            updatePlaylistUI();
         }
 
-        // --- VISUAL LOGIC ---
-        function setMode(mode) {
-            if (mode === 'audio') {
-                container.classList.remove('show-gem');
-                btnAudio.classList.add('active');
-                btnAudio.classList.remove('inactive');
-                btnHistory.classList.remove('active');
-                btnHistory.classList.add('inactive');
+        function playSong() {
+            isPlaying = true;
+            playBtn.querySelector('i').setAttribute('data-lucide', 'pause'); // Change icon logic handled by lucide.createIcons later
+            playBtn.innerHTML = `<div class="absolute inset-0 bg-gradient-to-br from-yellow-100 to-yellow-400"></div><i data-lucide="pause" class="w-7 h-7 fill-current relative z-10 ml-0 text-black"></i>`;
+            lucide.createIcons();
+            
+            albumCover.classList.remove('spin-paused');
+            visualizerRing.style.opacity = '1';
+            audio.play().catch(e => console.error("Play error", e));
+        }
+
+        function pauseSong() {
+            isPlaying = false;
+            playBtn.innerHTML = `<div class="absolute inset-0 bg-gradient-to-br from-gray-100 to-gray-300"></div><i data-lucide="play" class="w-7 h-7 fill-current relative z-10 ml-1 text-black"></i>`;
+            lucide.createIcons();
+            
+            albumCover.classList.add('spin-paused');
+            visualizerRing.style.opacity = '0';
+            audio.pause();
+        }
+
+        function nextSong() {
+            songIndex = (songIndex + 1) % playlist.length;
+            loadSong(songIndex);
+            if(isPlaying) playSong();
+        }
+
+        function prevSong() {
+            songIndex = (songIndex - 1 + playlist.length) % playlist.length;
+            loadSong(songIndex);
+            if(isPlaying) playSong();
+        }
+
+        // Drawer Logic
+        function toggleDrawer() {
+            const drawer = document.getElementById('drawer');
+            if(drawer.style.top === "0%") {
+                drawer.style.top = "100%";
             } else {
-                container.classList.add('show-gem');
-                btnHistory.classList.add('active');
-                btnHistory.classList.remove('inactive');
-                btnAudio.classList.remove('active');
-                btnAudio.classList.add('inactive');
+                drawer.style.top = "0%";
             }
         }
 
-        // --- PLAYLIST RENDER ---
         function renderPlaylist() {
-            const listContainer = document.getElementById('playlist-container');
-            listContainer.innerHTML = '';
-            
-            knowledgeBase.forEach((track, idx) => {
+            const container = document.getElementById('playlist-container');
+            container.innerHTML = '';
+            playlist.forEach((song, i) => {
                 const div = document.createElement('div');
-                div.className = `playlist-item flex items-center gap-4 cursor-pointer group ${idx === currentIndex ? 'active' : 'hover:bg-white/5'}`;
-                div.onclick = () => playIndex(idx);
-                
+                div.className = `flex items-center justify-between p-3 rounded-xl hover:bg-white/5 transition cursor-pointer mb-1 border border-transparent ${i === songIndex ? 'bg-white/10 border-white/10' : ''}`;
+                div.onclick = () => {
+                    songIndex = i;
+                    loadSong(songIndex);
+                    playSong();
+                    toggleDrawer(); // Close drawer on selection
+                };
                 div.innerHTML = `
-                    <div class="text-sm font-bold w-6 text-center hud-font ${idx === currentIndex ? 'text-red-500' : 'text-gray-600'}">${(idx + 1).toString().padStart(2, '0')}</div>
-                    <div class="flex-1">
-                        <div class="font-bold text-white text-base ${idx === currentIndex ? 'text-red-400' : 'group-hover:text-white'}">${track.title}</div>
-                        <div class="text-[9px] text-gray-500 mt-0.5 uppercase tracking-wider flex items-center gap-2">
-                            ${track.context.tags.slice(0, 2).map(tag => `<span>#${tag}</span>`).join('')}
+                    <div class="flex items-center gap-4">
+                        <span class="text-xs font-mono text-gray-500 w-4">${i + 1}</span>
+                        <div>
+                            <p class="text-sm font-medium text-white ${i === songIndex ? 'text-yellow-400' : ''}">${song.title}</p>
+                            <p class="text-[10px] text-gray-400">Grupo Erupción</p>
                         </div>
                     </div>
-                    ${idx === currentIndex && isPlaying 
-                        ? '<div class="w-2 h-2 bg-red-500 rounded-full animate-ping shadow-[0_0_10px_red]"></div>' 
-                        : '<i data-lucide="play" class="w-4 h-4 text-gray-700 group-hover:text-white transition"></i>'}
+                    ${i === songIndex ? '<i data-lucide="bar-chart-2" class="text-yellow-400 w-4 h-4 animate-pulse"></i>' : ''}
                 `;
-                listContainer.appendChild(div);
+                container.appendChild(div);
             });
             lucide.createIcons();
         }
 
-        // --- AUDIO ENGINE ---
-        function loadTrack(index, autoPlay = true) {
-            currentIndex = index;
-            const data = knowledgeBase[index];
-            
-            // UI Updates
-            playerTitle.innerText = data.title;
-            coverTitle.innerText = data.title;
-            gemYear.innerText = data.context.year;
-            
-            // Render Tags
-            gemTags.innerHTML = data.context.tags.map(tag => 
-                `<span class="px-2 py-1 bg-red-900/20 border border-red-500/30 text-[10px] text-red-200 hud-font rounded flex items-center gap-1 font-bold">${tag}</span>`
-            ).join('');
-            
-            // Render Story
-            gemText.innerHTML = data.context.story;
-
-            // Github Link Encoding
-            const encodedFile = encodeURIComponent(data.file)
-                .replace(/%20/g, '%20')
-                .replace(/\(/g, '%28')
-                .replace(/\)/g, '%29');
-                
-            audio.src = REPO + encodedFile;
-            audio.load();
-
-            renderPlaylist();
-
-            if(autoPlay) {
-                audio.play().then(() => {
-                    isPlaying = true;
-                    updateBtnState();
-                }).catch(e => console.log("Autoplay blocked", e));
-            } else {
-                isPlaying = false;
-                updateBtnState();
-            }
+        function updatePlaylistUI() {
+            renderPlaylist(); // Simple re-render to update highlights
         }
 
-        function playIndex(index) {
-            if(currentIndex === index && isPlaying) {
-                audio.pause();
-                isPlaying = false;
-                updateBtnState();
-                renderPlaylist();
-            } else {
-                loadTrack(index, true);
-                // Opcional: Auto cambiar a Portada si se cambia canción
-                // setMode('audio'); 
-            }
+        // Live Reactions System
+        function triggerReaction() {
+            const container = document.getElementById('reaction-container');
+            const emojis = ['❤️', '🔥', '🎵', '👏', '💃', '🎹'];
+            const emoji = emojis[Math.floor(Math.random() * emojis.length)];
+            
+            const el = document.createElement('div');
+            el.innerText = emoji;
+            el.className = 'floater text-2xl absolute bottom-0';
+            // Random position
+            const left = Math.random() * 80 + 10; // 10% to 90%
+            el.style.left = `${left}%`;
+            // Random duration variation
+            el.style.animationDuration = `${2 + Math.random()}s`;
+            
+            container.appendChild(el);
+            
+            // Clean up
+            setTimeout(() => el.remove(), 3000);
+            
+            showToast("¡Reacción enviada al escenario!");
         }
 
-        function updateBtnState() {
-            if(isPlaying) {
-                playBtn.innerHTML = '<i data-lucide="pause" class="w-8 h-8 fill-current text-red-600"></i>';
-                playBtn.classList.add('border-red-500');
-            } else {
-                playBtn.innerHTML = '<i data-lucide="play" class="w-8 h-8 fill-current ml-1 text-black"></i>';
-                playBtn.classList.remove('border-red-500');
-            }
-            lucide.createIcons();
+        function showToast(text) {
+            const t = document.getElementById('toast');
+            t.innerText = text;
+            t.style.opacity = '1';
+            t.style.top = '15%'; // Slide down effect
+            setTimeout(() => {
+                t.style.opacity = '0';
+                t.style.top = '10%';
+            }, 2000);
         }
 
-        // --- CONTROLS ---
-        playBtn.onclick = () => {
-            if(isPlaying) {
-                audio.pause();
-                isPlaying = false;
-            } else {
-                audio.play();
-                isPlaying = true;
-            }
-            updateBtnState();
-            renderPlaylist();
-        };
+        // Event Listeners
+        playBtn.addEventListener('click', () => isPlaying ? pauseSong() : playSong());
+        nextBtn.addEventListener('click', nextSong);
+        prevBtn.addEventListener('click', prevSong);
+        audio.addEventListener('ended', nextSong);
+        
+        audio.addEventListener('timeupdate', (e) => {
+            const { duration, currentTime } = e.srcElement;
+            const progressPercent = (currentTime / duration) * 100;
+            progress.value = progressPercent || 0;
+            
+            let min = Math.floor(currentTime / 60);
+            let sec = Math.floor(currentTime % 60);
+            if(sec < 10) sec = '0' + sec;
+            currTimeEl.innerText = `${min}:${sec}`;
 
-        document.getElementById('btn-next').onclick = () => {
-            let next = currentIndex + 1;
-            if(next >= knowledgeBase.length) next = 0;
-            loadTrack(next, true);
-        };
-
-        document.getElementById('btn-prev').onclick = () => {
-            let prev = currentIndex - 1;
-            if(prev < 0) prev = knowledgeBase.length - 1;
-            loadTrack(prev, true);
-        };
-
-        // --- PROGRESS ---
-        audio.addEventListener('timeupdate', () => {
-            if(audio.duration) {
-                const pct = (audio.currentTime / audio.duration) * 100;
-                progressFill.style.width = pct + "%";
-                progressInput.value = pct;
+            if(duration) {
+                let minD = Math.floor(duration / 60);
+                let secD = Math.floor(duration % 60);
+                if(secD < 10) secD = '0' + secD;
+                durTimeEl.innerText = `${minD}:${secD}`;
             }
         });
 
-        progressInput.addEventListener('input', (e) => {
-            if(audio.duration) {
-                audio.currentTime = (e.target.value / 100) * audio.duration;
+        progress.addEventListener('input', function() {
+            const duration = audio.duration;
+            audio.currentTime = (this.value / 100) * duration;
+        });
+
+        // Initialize Icons
+        lucide.createIcons();
+
+        // Simulate occasional random reaction from "other users"
+        setInterval(() => {
+            if(isPlaying && Math.random() > 0.7) {
+                triggerReaction();
             }
-        });
+        }, 8000);
 
-        audio.addEventListener('ended', () => {
-            let next = currentIndex + 1;
-            if(next >= knowledgeBase.length) next = 0;
-            loadTrack(next, true);
-        });
-
-        init();
     </script>
 </body>
 </html>
