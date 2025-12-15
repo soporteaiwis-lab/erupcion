@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>AI Wis Music - La Colección Definitiva</title>
+    <title>AI Wis Music - Versión 9.0</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700;900&family=Space+Grotesk:wght@300;500;700&family=Share+Tech+Mono&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
@@ -241,7 +241,10 @@
             </div>
             <div>
                 <h1 class="font-bold text-lg leading-none tracking-tighter text-white tech-font">AI WIS <span class="text-red-500">MUSIC</span></h1>
-                <p class="text-[9px] text-gray-400 uppercase tracking-widest font-bold hud-font">Malalhue • Chile</p>
+                <div class="flex items-center gap-2">
+                    <p class="text-[9px] text-gray-400 uppercase tracking-widest font-bold hud-font">Malalhue • Chile</p>
+                    <span class="text-[9px] text-gray-600 border border-gray-700 px-1 rounded bg-black/50">v9.0</span>
+                </div>
             </div>
         </div>
         
@@ -461,18 +464,24 @@
     <audio id="audio-player" preload="metadata"></audio>
 
     <script>
-        // --- CONFIGURACIÓN CRÍTICA ---
-        // INSTRUCCIÓN: PEGA TU API KEY DE GEMINI DENTRO DE LAS COMILLAS DE ABAJO
-        const GEMINI_API_KEY = "AIzaSyDO4g9czATk-EjU_tmM5XrNVPDnQfzYtV4"; 
+        // --- CONFIGURACIÓN DE IA ---
+        // INSTRUCCIÓN: Pega tu API Key de Gemini dentro de las comillas.
+        const GEMINI_API_KEY = "AIzaSyA8ZQ4HGR7cW-AkYWmOvve8fAEwpgoZE2c"; 
 
-        // --- DATOS ---
+        // --- DATOS DEL REPOSITORIO ---
         const REPO = "https://raw.githubusercontent.com/soporteaiwis-lab/erupcion/main/";
         
         const playlist = [
             { file: "00_Presentacion del Album.mp3", title: "Presentación del Álbum", year: "2025", context: "Introducción oficial al legado de Erupción." },
             { file: "01_ERES TU - Grupo Erupción.mp3", title: "Eres Tú", year: "1985", context: "Canción fundacional, teclados clásicos de Vildo Salazar." },
             { file: "02_TU Y YO - Grupo Erupción.mp3", title: "Tú y Yo", year: "1987", context: "Ritmo bailable para iniciar fiestas." },
-            { file: "03_VETE VETE - Grupo Erupción.mp3", title: "Vete Vete", year: "1989", context: "Clásico del desamor con ritmo tropical.", sunoLink: "https://suno.com/s/XQxAMYfWnhlTksV7" },
+            { 
+                file: "03_VETE VETE - Grupo Erupción.mp3", 
+                title: "Vete Vete", 
+                year: "1989", 
+                context: "Clásico del desamor con ritmo tropical.",
+                sunoLink: "https://suno.com/s/XQxAMYfWnhlTksV7"
+            },
             { file: "04_VUELVE PRONTO - Grupo Erupción.mp3", title: "Vuelve Pronto", year: "1990", context: "Canción de carretera y giras por el sur." },
             { file: "05_NUNCA MAS - Grupo Erupción.mp3", title: "Nunca Más", year: "1991", context: "Ritmo acelerado, evolución del sonido." },
             { file: "06_PERDONAME AMOR - Grupo Erupción.mp3", title: "Perdóname Amor", year: "1988", context: "Balada cumbia muy emotiva." },
@@ -485,7 +494,7 @@
             { file: "08_NO RESISTIRE (Version Bachata) - Grupo Erupción.mp3", title: "No Resistiré (Bachata)", year: "BONUS", context: "Fusión experimental con IA Suno." }
         ];
 
-        // --- VARS ---
+        // --- VARIABLES ---
         let currentIndex = 0;
         let isPlaying = false;
         const audio = document.getElementById('audio-player');
@@ -501,22 +510,20 @@
         const aiBioText = document.getElementById('ai-bio-text');
         const btnSunoLink = document.getElementById('btn-suno-link');
         
-        // Lyrics System Vars
+        // Sistema de Letras
         let lyricsData = [];
         let isLyricsLoaded = false;
-        let isAiLyrics = false;
 
-        // --- INIT ---
+        // --- INICIALIZACIÓN ---
         window.addEventListener('load', () => {
             try {
-                if (typeof lucide === 'undefined') throw new Error("Librería de iconos no cargada");
-                lucide.createIcons();
+                if (typeof lucide !== 'undefined') lucide.createIcons();
                 renderPlaylist();
                 loadTrack(0, false);
             } catch (e) { console.error("Init Error:", e); }
         });
 
-        // --- NAVIGATION ---
+        // --- NAVEGACIÓN ---
         function switchView(viewId) {
             ['player', 'bio', 'lyrics'].forEach(v => {
                 document.getElementById('view-' + v).classList.add('hidden');
@@ -529,11 +536,11 @@
             btn.classList.remove('inactive');
         }
 
-        // --- GEMINI API CALLER ---
+        // --- LLAMADA API GEMINI ---
         async function callGemini(prompt) {
-            if (!GEMINI_API_KEY || GEMINI_API_KEY.includes("AIzaSyDO4g9czATk-EjU_tmM5XrNVPDnQfzYtV4")) {
-                console.log("Falta API Key, funciones IA deshabilitadas");
-                return null; // Silent fail
+            if (!GEMINI_API_KEY || GEMINI_API_KEY.length < 10) {
+                console.warn("Falta API Key de Gemini");
+                return null;
             }
             try {
                 const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${GEMINI_API_KEY}`, {
@@ -542,15 +549,18 @@
                     body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
                 });
                 const data = await response.json();
-                return data.candidates?.[0]?.content?.parts?.[0]?.text || "Error.";
-            } catch (error) { return "Error IA."; }
+                return data.candidates?.[0]?.content?.parts?.[0]?.text || "Error en respuesta IA.";
+            } catch (error) { 
+                console.error(error); 
+                return "Error de conexión IA.";
+            }
         }
 
         async function expandBioWithAI() {
             const track = playlist[currentIndex];
             aiBioBox.classList.add('active');
             aiBioText.innerHTML = 'Consultando... <span class="ai-loading"></span>';
-            const result = await callGemini(`Dato breve sobre cumbia chilena en ${track.year}.`);
+            const result = await callGemini(`Dato breve y nostálgico sobre la cumbia chilena en el año ${track.year}.`);
             if(result) aiBioText.innerText = result;
             else aiBioText.innerText = "IA no disponible (Verifica API Key).";
         }
@@ -559,12 +569,12 @@
             const track = playlist[currentIndex];
             djOverlay.classList.remove('hidden');
             djText.innerHTML = 'Sintonizando... <span class="ai-loading"></span>';
-            const result = await callGemini(`Locutor de radio presenta: ${track.title} (${track.year}).`);
+            const result = await callGemini(`Locutor de radio FM presenta con energía: "${track.title}" (${track.year}).`);
             if(result) djText.innerText = result;
-            else djText.innerText = "¡Sube el volumen y disfruta!";
+            else djText.innerText = "¡Sube el volumen! (IA no disponible)";
         }
 
-        // --- MANEJO DE LETRAS ---
+        // --- MANEJO DE LETRAS (.LRC) ---
         async function loadLyrics(track) {
             const container = document.getElementById('lyrics-display');
             const status = document.getElementById('lyrics-status-badge');
@@ -576,9 +586,10 @@
             isLyricsLoaded = false;
             controls.classList.add('hidden');
 
-            // Intento 1: Fetch desde GitHub (.lrc)
+            // Búsqueda automática de .lrc en GitHub
+            // Asume que el archivo .lrc se llama igual que el mp3
             const lrcName = track.file.replace('.mp3', '.lrc');
-            // Cache busting param
+            // Cache busting para asegurar que carga la última versión
             const timestamp = new Date().getTime();
             const encodedLrc = encodeURIComponent(lrcName).replace(/%20/g, '%20').replace(/\(/g, '%28').replace(/\)/g, '%29');
             const url = `${REPO}${encodedLrc}?t=${timestamp}`;
@@ -589,13 +600,13 @@
                     const text = await response.text();
                     parseLRC(text);
                     renderLyricsUI();
-                    source.innerText = "Sincronizada (GitHub)";
+                    source.innerText = "Sincronizada (GitHub .lrc)";
                     status.querySelector('span').className = "w-2 h-2 rounded-full bg-green-500";
                 } else {
-                    throw new Error("No lyric file");
+                    throw new Error("No existe .lrc");
                 }
             } catch (e) {
-                // Fallback IA
+                // Fallback IA si no hay LRC
                 controls.classList.remove('hidden');
                 container.innerHTML = '<div class="h-full flex flex-col items-center justify-center text-gray-500 opacity-60"><p>Sin letra oficial</p></div>';
                 source.innerText = "No disponible";
@@ -605,15 +616,21 @@
 
         function parseLRC(lrcText) {
             const lines = lrcText.split('\n');
+            // Regex para capturar [mm:ss.xx] Texto
             const regex = /^\[(\d{2}):(\d{2}\.\d{2})\](.*)/;
             lyricsData = [];
             lines.forEach(line => {
                 const match = line.match(regex);
                 if (match) {
-                    lyricsData.push({
-                        time: parseInt(match[1]) * 60 + parseFloat(match[2]),
-                        text: match[3].trim()
-                    });
+                    const min = parseInt(match[1]);
+                    const sec = parseFloat(match[2]);
+                    const text = match[3].trim();
+                    if(text) { // Solo líneas con texto
+                        lyricsData.push({
+                            time: min * 60 + sec,
+                            text: text
+                        });
+                    }
                 }
             });
             isLyricsLoaded = true;
@@ -622,6 +639,7 @@
         function renderLyricsUI() {
             const container = document.getElementById('lyrics-display');
             container.innerHTML = '';
+            // Espaciadores para centrar
             const spacerTop = document.createElement('div'); spacerTop.style.height = "40%"; container.appendChild(spacerTop);
 
             lyricsData.forEach((line, index) => {
@@ -643,11 +661,19 @@
             
             const currentTime = audio.currentTime;
             
+            // Buscar índice activo
             let activeIndex = -1;
             for (let i = 0; i < lyricsData.length; i++) {
                 if (currentTime >= lyricsData[i].time) activeIndex = i;
                 else break;
             }
+
+            // Actualizar clases (Optimizado)
+            // Solo actualizamos si cambia el índice activo
+            const currentActive = document.querySelector('.lyric-line.active');
+            const targetId = `lyric-${activeIndex}`;
+            
+            if (currentActive && currentActive.id === targetId) return;
 
             lyricsData.forEach((_, i) => {
                 const el = document.getElementById(`lyric-${i}`);
@@ -669,16 +695,18 @@
             btn.disabled = true;
             btn.innerHTML = '<span class="ai-loading"></span> IA Sincronizando...';
             
+            // Pedimos a Gemini timestamps estimados
             const duration = Math.floor(audio.duration || 180);
-            const prompt = `Genera letra LRC para "${track.title}" (Cumbia, ${duration}s). Formato: [mm:ss.xx] Texto.`;
+            const prompt = `Genera letra LRC para "${track.title}" (Cumbia, ${duration}s). Formato estricto: [mm:ss.xx] Texto. Inventa tiempos lógicos distribuidos en la duración.`;
             
             const text = await callGemini(prompt);
             if(text && text.includes('[')) {
                 parseLRC(text);
                 renderLyricsUI();
-                btn.innerHTML = 'Generada';
+                btn.innerHTML = 'Generada por IA';
+                document.getElementById('lyrics-source-text').innerText = "Generada por IA";
             } else {
-                btn.innerHTML = 'Error IA (Revisar API Key)';
+                btn.innerHTML = 'Error de IA';
             }
             btn.disabled = false;
         }
@@ -689,17 +717,25 @@
                 currentIndex = index;
                 const track = playlist[index];
                 
+                // UI Updates
                 if(playerTitle) playerTitle.innerText = track.title;
                 if(coverTitle) coverTitle.innerText = track.title;
                 if(contextYear) contextYear.innerText = "AÑO: " + track.year;
                 
+                // Suno Button
                 if(track.sunoLink && btnSunoLink) {
                     btnSunoLink.href = track.sunoLink;
                     btnSunoLink.classList.remove('hidden');
                 } else if (btnSunoLink) btnSunoLink.classList.add('hidden');
 
+                // Reset AI Visuals
+                if(djOverlay) djOverlay.classList.add('hidden');
+                if(aiBioBox) { aiBioBox.classList.remove('active'); aiBioText.innerText = "..."; }
+                
+                // Cargar Letras
                 loadLyrics(track);
 
+                // Audio Source
                 const encodedFile = encodeURIComponent(track.file).replace(/%20/g, '%20').replace(/\(/g, '%28').replace(/\)/g, '%29');
                 audio.src = REPO + encodedFile;
                 audio.load();
