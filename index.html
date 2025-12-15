@@ -225,25 +225,9 @@
             display: none;
         }
         .ai-box.active { display: block; animation: fadeIn 0.5s ease-out; }
-        
-        /* Error Box */
-        #error-message {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.95); z-index: 100;
-            display: none; align-items: center; justify-content: center; flex-direction: column;
-            text-align: center; padding: 20px;
-        }
     </style>
 </head>
 <body class="flex flex-col h-[100dvh] relative text-white">
-
-    <!-- ERROR SCREEN (Oculto por defecto) -->
-    <div id="error-message">
-        <i data-lucide="alert-triangle" class="w-16 h-16 text-red-500 mb-4"></i>
-        <h2 class="text-2xl font-bold mb-2">Error de Inicialización</h2>
-        <p class="text-gray-400 mb-4" id="error-detail">Algo salió mal cargando la aplicación.</p>
-        <button onclick="location.reload()" class="bg-red-600 px-6 py-2 rounded-full font-bold">Recargar</button>
-    </div>
 
     <!-- AMBIENTE -->
     <div class="deep-space-bg"></div>
@@ -478,15 +462,65 @@
 
     <script>
         // --- CONFIGURACIÓN CRÍTICA ---
-        // INSTRUCCIÓN: PEGA TU API KEY DE GEMINI DENTRO DE LAS COMILLAS
-        const GEMINI_API_KEY = "AIzaSyDO4g9czATk-EjU_tmM5XrNVPDnQfzYtV4"; 
+        // INSTRUCCIÓN: PEGA TU API KEY DE GEMINI DENTRO DE LAS COMILLAS DE ABAJO
+        const GEMINI_API_KEY = ""; 
 
         // --- DATOS ---
         const REPO = "https://raw.githubusercontent.com/soporteaiwis-lab/erupcion/main/";
         
         const playlist = [
             { file: "00_Presentacion del Album.mp3", title: "Presentación del Álbum", year: "2025", context: "Introducción oficial al legado de Erupción." },
-            { file: "01_ERES TU - Grupo Erupción.mp3", title: "Eres Tú", year: "1985", context: "Canción fundacional, teclados clásicos de Vildo Salazar." },
+            { 
+                file: "01_ERES TU - Grupo Erupción.mp3", 
+                title: "Eres Tú", 
+                year: "1985", 
+                context: "Canción fundacional, teclados clásicos de Vildo Salazar.",
+                officialLyrics: `[Intro]
+
+[Verse 1]
+Cuando tú no estás cerca de mí
+La pena se apodera de mi corazón
+Solo tu presencia calma mi ansiedad
+Con esa belleza que me atrae a ti
+Yo solo te he querido siempre a ti
+Dios es mi testigo que es así
+Pues mi vida gira siempre en torno a ti
+Desde el día en que te conocí
+
+[Chorus]
+Eres tú, solo tú, la mujer de mi vida
+Eres tú, solo tú, la mujer de mi amor
+Sin ti este mundo no es nada
+Sin ti qué sería de mí
+Eres tú, solo tú, la mujer de mi vida
+Eres tú, solo tú, la mujer de mi amor
+Si tú me faltaras un día
+Mi corazón no podría latir
+
+[Instrumental]
+
+[Verse 2]
+Cuando tú no estás cerca de mí
+La pena se apodera de mi corazón
+Solo tu presencia calma mi ansiedad
+Con esa belleza que me atrae a ti
+Yo solo te he querido siempre a ti
+Dios es mi testigo que es así
+Pues mi vida gira siempre en torno a ti
+Desde el día en que te conocí
+
+[Chorus]
+Eres tú, solo tú, la mujer de mi vida
+Eres tú, solo tú, la mujer de mi amor
+Sin ti este mundo no es nada
+Sin ti qué sería de mí
+Eres tú, solo tú, la mujer de mi vida
+Eres tú, solo tú, la mujer de mi amor
+Si tú me faltaras un día
+Mi corazón no podría latir
+
+[Outro]`
+            },
             { file: "02_TU Y YO - Grupo Erupción.mp3", title: "Tú y Yo", year: "1987", context: "Ritmo bailable para iniciar fiestas." },
             { 
                 file: "03_VETE VETE - Grupo Erupción.mp3", 
@@ -533,8 +567,6 @@ Que sin ti yo puedo vivir`
         const aiBioBox = document.getElementById('ai-bio-box');
         const aiBioText = document.getElementById('ai-bio-text');
         const btnSunoLink = document.getElementById('btn-suno-link');
-        const errorMsg = document.getElementById('error-message');
-        const errorDetail = document.getElementById('error-detail');
         
         // Lyrics System Vars
         let lyricsData = [];
@@ -550,14 +582,9 @@ Que sin ti yo puedo vivir`
                 loadTrack(0, false);
             } catch (e) {
                 console.error("Init Error:", e);
-                showError("Error al iniciar la aplicación: " + e.message);
+                // Fail silently or show minimal UI error if needed, but allow music to work
             }
         });
-
-        function showError(msg) {
-            errorMsg.style.display = 'flex';
-            errorDetail.innerText = msg;
-        }
 
         // --- NAVIGATION ---
         function switchView(viewId) {
@@ -574,8 +601,8 @@ Que sin ti yo puedo vivir`
 
         // --- GEMINI API CALLER ---
         async function callGemini(prompt) {
-            if (!GEMINI_API_KEY || GEMINI_API_KEY === "AIzaSyDO4g9czATk-EjU_tmM5XrNVPDnQfzYtV4") {
-                alert("⚠️ Falta la API Key de Gemini. Edita el archivo index.html y pega tu clave.");
+            if (!GEMINI_API_KEY || GEMINI_API_KEY === "") {
+                alert("⚠️ Falta la API Key de Gemini. Por favor, edita el archivo HTML y pega tu clave en la variable GEMINI_API_KEY.");
                 return "Error: Falta configuración.";
             }
             try {
@@ -623,10 +650,10 @@ Que sin ti yo puedo vivir`
             isLyricsLoaded = false;
             aiControls.classList.add('hidden');
 
-            // 1. Letra Oficial (Suno)
+            // 1. Letra Oficial (Pre-cargada)
             if (track.officialLyrics) {
                 processRawLyrics(track.officialLyrics);
-                sourceText.innerText = "Letra Oficial (Suno)";
+                sourceText.innerText = "Letra Oficial (Suno/Manual)";
                 if(statusBadge) statusBadge.querySelector('span').className = "w-2 h-2 rounded-full bg-purple-500";
                 return;
             }
@@ -763,7 +790,7 @@ Que sin ti yo puedo vivir`
                 }
             } catch(e) {
                 console.error("Load Track Error:", e);
-                showError("Error al cargar la canción: " + e.message);
+                // Sin alert intrusivo, solo consola
             }
         }
 
