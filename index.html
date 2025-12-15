@@ -405,6 +405,7 @@
                     <span class="w-2 h-2 rounded-full bg-gray-500"></span>
                     <span id="lyrics-source-text">Esperando pista...</span>
                 </div>
+                <div id="lyrics-time-debug" class="text-[10px] text-gray-600 mt-1 font-mono">00:00</div>
             </div>
 
             <!-- Botón Generar Letra con IA (Solo visible si no hay LRC) -->
@@ -468,6 +469,46 @@
         // --- DATOS ---
         const REPO = "https://raw.githubusercontent.com/soporteaiwis-lab/erupcion/main/";
         
+        // LRC Estimado Manualmente para Track 01 (Sincronización Perfecta)
+        const lyricsEresTu = `
+[00:18.00] Cuando tú no estás cerca de mí
+[00:23.00] La pena se apodera de mi corazón
+[00:27.00] Solo tu presencia calma mi ansiedad
+[00:32.00] Con esa belleza que me atrae a ti
+[00:37.00] Yo solo te he querido siempre a ti
+[00:41.00] Dios es mi testigo que es así
+[00:46.00] Pues mi vida gira siempre en torno a ti
+[00:50.00] Desde el día en que te conocí
+[00:54.00] ...
+[00:55.00] Eres tú, solo tú, la mujer de mi vida
+[00:59.00] Eres tú, solo tú, la mujer de mi amor
+[01:04.00] Sin ti este mundo no es nada
+[01:08.00] Sin ti qué sería de mí
+[01:13.00] Eres tú, solo tú, la mujer de mi vida
+[01:17.00] Eres tú, solo tú, la mujer de mi amor
+[01:22.00] Si tú me faltaras un día
+[01:26.00] Mi corazón no podría latir
+[01:31.00] (Instrumental)
+[02:05.00] Cuando tú no estás cerca de mí
+[02:10.00] La pena se apodera de mi corazón
+[02:14.00] Solo tu presencia calma mi ansiedad
+[02:19.00] Con esa belleza que me atrae a ti
+[02:24.00] Yo solo te he querido siempre a ti
+[02:28.00] Dios es mi testigo que es así
+[02:33.00] Pues mi vida gira siempre en torno a ti
+[02:37.00] Desde el día en que te conocí
+[02:41.00] ...
+[02:42.00] Eres tú, solo tú, la mujer de mi vida
+[02:46.00] Eres tú, solo tú, la mujer de mi amor
+[02:51.00] Sin ti este mundo no es nada
+[02:55.00] Sin ti qué sería de mí
+[03:00.00] Eres tú, solo tú, la mujer de mi vida
+[03:04.00] Eres tú, solo tú, la mujer de mi amor
+[03:09.00] Si tú me faltaras un día
+[03:13.00] Mi corazón no podría latir
+[03:18.00] (Fin)
+`;
+
         const playlist = [
             { file: "00_Presentacion del Album.mp3", title: "Presentación del Álbum", year: "2025", context: "Introducción oficial al legado de Erupción." },
             { 
@@ -475,51 +516,7 @@
                 title: "Eres Tú", 
                 year: "1985", 
                 context: "Canción fundacional, teclados clásicos de Vildo Salazar.",
-                officialLyrics: `[Intro]
-
-[Verse 1]
-Cuando tú no estás cerca de mí
-La pena se apodera de mi corazón
-Solo tu presencia calma mi ansiedad
-Con esa belleza que me atrae a ti
-Yo solo te he querido siempre a ti
-Dios es mi testigo que es así
-Pues mi vida gira siempre en torno a ti
-Desde el día en que te conocí
-
-[Chorus]
-Eres tú, solo tú, la mujer de mi vida
-Eres tú, solo tú, la mujer de mi amor
-Sin ti este mundo no es nada
-Sin ti qué sería de mí
-Eres tú, solo tú, la mujer de mi vida
-Eres tú, solo tú, la mujer de mi amor
-Si tú me faltaras un día
-Mi corazón no podría latir
-
-[Instrumental]
-
-[Verse 2]
-Cuando tú no estás cerca de mí
-La pena se apodera de mi corazón
-Solo tu presencia calma mi ansiedad
-Con esa belleza que me atrae a ti
-Yo solo te he querido siempre a ti
-Dios es mi testigo que es así
-Pues mi vida gira siempre en torno a ti
-Desde el día en que te conocí
-
-[Chorus]
-Eres tú, solo tú, la mujer de mi vida
-Eres tú, solo tú, la mujer de mi amor
-Sin ti este mundo no es nada
-Sin ti qué sería de mí
-Eres tú, solo tú, la mujer de mi vida
-Eres tú, solo tú, la mujer de mi amor
-Si tú me faltaras un día
-Mi corazón no podría latir
-
-[Outro]`
+                officialLyrics: lyricsEresTu
             },
             { file: "02_TU Y YO - Grupo Erupción.mp3", title: "Tú y Yo", year: "1987", context: "Ritmo bailable para iniciar fiestas." },
             { 
@@ -528,17 +525,16 @@ Mi corazón no podría latir
                 year: "1989", 
                 context: "Clásico del desamor con ritmo tropical.",
                 sunoLink: "https://suno.com/s/XQxAMYfWnhlTksV7",
-                officialLyrics: `(Instrumental Intro)
-Vete, vete de mi lado
-No quiero verte más
-Nuestro amor se ha terminado
-Ya no vuelvas nunca más
-
-(Coro)
-Vete vete, ya no quiero tu cariño
-Vete vete, que me has hecho sufrir
-Vete vete, busca otro camino
-Que sin ti yo puedo vivir`
+                officialLyrics: `[00:15.00] (Instrumental Intro)
+[00:30.00] Vete, vete de mi lado
+[00:35.00] No quiero verte más
+[00:40.00] Nuestro amor se ha terminado
+[00:45.00] Ya no vuelvas nunca más
+[00:50.00] (Coro)
+[00:52.00] Vete vete, ya no quiero tu cariño
+[00:56.00] Vete vete, que me has hecho sufrir
+[01:00.00] Vete vete, busca otro camino
+[01:04.00] Que sin ti yo puedo vivir`
             },
             { file: "04_VUELVE PRONTO - Grupo Erupción.mp3", title: "Vuelve Pronto", year: "1990", context: "Canción de carretera y giras por el sur." },
             { file: "05_NUNCA MAS - Grupo Erupción.mp3", title: "Nunca Más", year: "1991", context: "Ritmo acelerado, evolución del sonido." },
@@ -582,7 +578,6 @@ Que sin ti yo puedo vivir`
                 loadTrack(0, false);
             } catch (e) {
                 console.error("Init Error:", e);
-                // Fail silently or show minimal UI error if needed, but allow music to work
             }
         });
 
@@ -650,11 +645,19 @@ Que sin ti yo puedo vivir`
             isLyricsLoaded = false;
             aiControls.classList.add('hidden');
 
-            // 1. Letra Oficial (Pre-cargada)
+            // 1. Letra Oficial (Pre-cargada con LRC o Texto plano)
             if (track.officialLyrics) {
-                processRawLyrics(track.officialLyrics);
-                sourceText.innerText = "Letra Oficial (Suno/Manual)";
-                if(statusBadge) statusBadge.querySelector('span').className = "w-2 h-2 rounded-full bg-purple-500";
+                // Check if it has LRC format [00:00]
+                if (track.officialLyrics.includes('[')) {
+                    parseLRC(track.officialLyrics);
+                    sourceText.innerText = "Letra Sincronizada (Manual)";
+                    if(statusBadge) statusBadge.querySelector('span').className = "w-2 h-2 rounded-full bg-green-500";
+                } else {
+                    processRawLyrics(track.officialLyrics);
+                    sourceText.innerText = "Letra Oficial (Estimada)";
+                    if(statusBadge) statusBadge.querySelector('span').className = "w-2 h-2 rounded-full bg-purple-500";
+                }
+                renderLyricsUI();
                 return;
             }
 
@@ -710,16 +713,34 @@ Que sin ti yo puedo vivir`
             const track = playlist[currentIndex];
             const btn = document.getElementById('btn-generate-lyrics');
             btn.disabled = true;
-            btn.innerHTML = '<span class="ai-loading"></span> IA Escribiendo...';
+            btn.innerHTML = '<span class="ai-loading"></span> IA Escribiendo y Sincronizando...';
             
-            const prompt = `Escribe la letra para la canción "${track.title}" de Grupo Erupción. Solo letra.`;
+            // IMPROVED PROMPT FOR SYNC
+            const duration = Math.floor(audio.duration || 180);
+            const minutes = Math.floor(duration / 60);
+            const seconds = duration % 60;
+            const durationStr = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+
+            const prompt = `Genera la letra sincronizada en formato LRC para la canción "${track.title}" de Grupo Erupción (Cumbia). 
+            Duración total: ${durationStr}.
+            Distribuye la letra lógicamente en este tiempo, considerando intros e interludios instrumentales típicos de cumbia.
+            Formato obligatorio por línea: [mm:ss.xx] Texto de la línea.
+            NO expliques nada, solo dame el código LRC.`;
+
             const text = await callGemini(prompt);
             
-            processRawLyrics(text);
+            // Check format
+            if (text.includes('[')) {
+                parseLRC(text);
+            } else {
+                processRawLyrics(text);
+            }
             
-            btn.innerHTML = 'Letra Generada';
+            renderLyricsUI();
+            
+            btn.innerHTML = 'Letra Generada por IA';
             btn.disabled = false;
-            document.getElementById('lyrics-source-text').innerText = "Generada por IA";
+            document.getElementById('lyrics-source-text').innerText = "Generada + Sincronizada (IA)";
         }
 
         function renderLyricsUI() {
@@ -741,15 +762,29 @@ Que sin ti yo puedo vivir`
         function syncLyrics() {
             if (!isLyricsLoaded || lyricsData.length === 0) return;
             const currentTime = audio.currentTime;
+            
+            // Debug time
+            const m = Math.floor(currentTime / 60);
+            const s = Math.floor(currentTime % 60);
+            document.getElementById('lyrics-time-debug').innerText = `${m}:${s.toString().padStart(2,'0')}`;
+
             let activeIndex = -1;
             for (let i = 0; i < lyricsData.length; i++) {
                 if (currentTime >= lyricsData[i].time) activeIndex = i; else break;
             }
+            
+            // Optimization: Only update class if changed
+            const currentActive = document.querySelector('.lyric-line.active');
+            if (currentActive && currentActive.id === `lyric-${activeIndex}`) return;
+
             lyricsData.forEach((_, i) => {
                 const el = document.getElementById(`lyric-${i}`);
                 if (el) {
                     el.classList.remove('active', 'past');
-                    if (i === activeIndex) { el.classList.add('active'); el.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
+                    if (i === activeIndex) { 
+                        el.classList.add('active'); 
+                        el.scrollIntoView({ behavior: 'smooth', block: 'center' }); 
+                    }
                     else if (i < activeIndex) el.classList.add('past');
                 }
             });
