@@ -143,32 +143,6 @@
             border-left: 4px solid #ef4444;
         }
 
-        /* --- ESTILOS LETRAS LIVE (KARAOKE) --- */
-        .lyrics-container {
-            text-align: center;
-            padding: 20px 10px;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-        .lyric-line {
-            font-size: 1.2rem;
-            font-weight: 700;
-            color: rgba(255,255,255,0.3);
-            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-            padding: 8px 0;
-            cursor: default;
-        }
-        .lyric-line.active {
-            color: #fff;
-            transform: scale(1.1);
-            text-shadow: 0 0 15px rgba(255,255,255,0.5);
-        }
-        .lyric-line.past {
-            color: rgba(255,255,255,0.1);
-        }
-
         /* Slider */
         input[type=range] { -webkit-appearance: none; background: transparent; }
         input[type=range]::-webkit-slider-thumb {
@@ -243,7 +217,7 @@
                 <i data-lucide="book-open" class="w-4 h-4"></i> BIOGRAFÍA
             </button>
             <button onclick="switchView('lyrics')" id="btn-lyrics" class="nav-pill inactive">
-                <i data-lucide="mic-2" class="w-4 h-4"></i> LETRAS LIVE
+                <i data-lucide="mic-2" class="w-4 h-4"></i> LETRAS
             </button>
         </div>
     </div>
@@ -273,7 +247,7 @@
                          </div>
                     </div>
 
-                    <!-- Info Contextual -->
+                    <!-- Info Contextual (CORREGIDO: Restaurado Cover Title) -->
                     <div class="absolute bottom-6 w-full text-center px-4 z-20">
                         <h2 id="cover-title" class="text-2xl font-bold text-white tech-font mb-2 drop-shadow-lg leading-none">Cargando...</h2>
                         <div class="inline-flex items-center gap-2 bg-black/60 backdrop-blur px-3 py-1 rounded-full border border-red-500/30 mb-3">
@@ -374,24 +348,23 @@
             </div>
         </div>
 
-        <!-- VISTA 3: LETRAS (LIVE LYRICS) -->
-        <div id="view-lyrics" class="absolute inset-0 overflow-y-auto scroll-area p-6 pb-48 hidden fade-in flex flex-col">
-            
-            <div class="text-center mb-4">
-                <h3 class="text-lg font-bold text-white uppercase tracking-widest"><i data-lucide="mic" class="w-4 h-4 inline text-red-500"></i> Letras en Vivo</h3>
-                <p class="text-xs text-gray-400" id="lyrics-status">Sincronización IA desactivada</p>
+        <!-- VISTA 3: LETRAS (LYRICS) -->
+        <div id="view-lyrics" class="absolute inset-0 overflow-y-auto scroll-area p-6 pb-48 hidden fade-in flex flex-col items-center text-center">
+            <div class="mt-10 mb-6">
+                <i data-lucide="mic" class="w-16 h-16 text-gray-700 mx-auto mb-4"></i>
+                <h3 class="text-xl font-bold text-white mb-2">Letra de la Canción</h3>
+                <p class="text-sm text-gray-400">Sigue el ritmo y canta con Erupción</p>
             </div>
-
-            <!-- Botón Generar Letra -->
-            <button onclick="generateSyncedLyrics()" id="btn-generate-lyrics" class="w-full mb-6 bg-gradient-to-r from-green-700 to-emerald-800 hover:from-green-600 hover:to-emerald-700 py-3 rounded-xl flex items-center justify-center gap-2 transition-all shadow-lg border border-green-500/30">
-                <i data-lucide="sparkles" class="w-4 h-4 text-green-200"></i>
-                <span class="text-sm font-bold text-white">Generar y Sincronizar Letra con IA</span>
-            </button>
             
-            <!-- Contenedor de Letras (Scrollable) -->
-            <div id="lyrics-display" class="lyrics-container flex-1 overflow-y-auto no-scrollbar mask-gradient relative min-h-[300px]">
-                <div class="absolute inset-0 flex items-center justify-center text-gray-500 opacity-50 pointer-events-none">
-                    <p class="text-sm text-center">Presiona el botón para<br>generar la letra con IA</p>
+            <div class="w-full max-w-md bg-white/5 p-8 rounded-2xl border border-white/5 min-h-[300px] flex items-center justify-center relative overflow-hidden group">
+                <!-- Placeholder visual de letras -->
+                <div class="absolute inset-0 bg-gradient-to-b from-transparent via-red-900/10 to-transparent animate-pulse"></div>
+                <div class="relative z-10 space-y-4 opacity-80">
+                    <p class="text-lg font-bold text-white/90">🎵</p>
+                    <p class="text-base text-gray-300">(Instrumental Intro)</p>
+                    <p class="text-xl text-white font-bold typing-anim">Al calor de la cumbia...</p>
+                    <p class="text-lg text-gray-300">Bailando sin parar...</p>
+                    <p class="text-base text-gray-400 mt-4 italic text-xs">Las letras completas se sincronizarán pronto.</p>
                 </div>
             </div>
         </div>
@@ -487,10 +460,6 @@
         const djText = document.getElementById('dj-text');
         const aiBioBox = document.getElementById('ai-bio-box');
         const aiBioText = document.getElementById('ai-bio-text');
-        
-        // Lyrics Vars
-        let currentLyricsData = []; // Array of lines
-        let lyricsGenerated = false;
 
         // --- INIT ---
         function init() {
@@ -538,43 +507,6 @@
             aiBioText.innerText = result;
         }
 
-        // --- AI LIVE LYRICS GENERATOR ---
-        async function generateSyncedLyrics() {
-            const track = playlist[currentIndex];
-            const btn = document.getElementById('btn-generate-lyrics');
-            const container = document.getElementById('lyrics-display');
-            const status = document.getElementById('lyrics-status');
-
-            btn.disabled = true;
-            btn.innerHTML = '<span class="ai-loading"></span> Escribiendo letra...';
-            status.innerText = "IA Analizando ritmo y estructura...";
-
-            // Prompt to generate lyrics (creative reconstruction)
-            const prompt = `Actúa como el compositor del Grupo Erupción (Cumbia Chilena). Escribe la letra completa para la canción titulada "${track.title}". La canción es una cumbia romántica o bailable. 
-            IMPORTANTE: Solo escribe la letra, línea por línea. Separa las estrofas con un espacio. No incluyas títulos como "Coro" o "Verso". Haz que la letra tenga sentido con el título.`;
-
-            const result = await callGemini(prompt);
-            
-            // Process result
-            const lines = result.split('\n').filter(line => line.trim() !== '');
-            currentLyricsData = lines;
-            lyricsGenerated = true;
-
-            // Render static first
-            container.innerHTML = '';
-            lines.forEach((line, index) => {
-                const p = document.createElement('p');
-                p.id = `lyric-${index}`;
-                p.className = 'lyric-line';
-                p.innerText = line;
-                container.appendChild(p);
-            });
-
-            btn.innerHTML = '<i data-lucide="check"></i> Letra Sincronizada';
-            status.innerText = "Modo Live Lyrics: ACTIVO";
-            lucide.createIcons();
-        }
-
         // --- AUDIO ENGINE ---
         function loadTrack(index, autoPlay = true) {
             currentIndex = index;
@@ -582,6 +514,7 @@
             
             // UI Updates
             playerTitle.innerText = track.title;
+            // Verificación de nulidad para evitar errores si el elemento no carga
             if(coverTitle) coverTitle.innerText = track.title;
             if(contextYear) contextYear.innerText = "AÑO: " + track.year;
             
@@ -591,14 +524,6 @@
                 aiBioBox.classList.remove('active');
                 aiBioText.innerText = "...";
             }
-            
-            // Reset Lyrics
-            lyricsGenerated = false;
-            currentLyricsData = [];
-            document.getElementById('lyrics-display').innerHTML = '<div class="absolute inset-0 flex items-center justify-center text-gray-500 opacity-50 pointer-events-none"><p class="text-sm text-center">Presiona el botón para<br>generar la letra con IA</p></div>';
-            document.getElementById('btn-generate-lyrics').innerHTML = '<i data-lucide="sparkles" class="w-4 h-4 text-green-200"></i><span class="text-sm font-bold text-white">Generar y Sincronizar Letra con IA</span>';
-            document.getElementById('btn-generate-lyrics').disabled = false;
-            lucide.createIcons();
 
             // Github Encoding
             const encodedFile = encodeURIComponent(track.file)
@@ -724,35 +649,11 @@
             loadTrack(prev, true);
         };
 
-        // --- UPDATE LOOP (SYNC LOGIC) ---
         audio.addEventListener('timeupdate', () => {
             if(audio.duration) {
                 const pct = (audio.currentTime / audio.duration) * 100;
                 progressFill.style.width = pct + "%";
                 progressInput.value = pct;
-
-                // Live Lyrics Sync Logic
-                if (lyricsGenerated && currentLyricsData.length > 0) {
-                    const totalLines = currentLyricsData.length;
-                    // Simple Algorithm: Distribute lines evenly across song duration
-                    // (Assuming constant tempo for un-synced lyrics)
-                    const timePerLine = audio.duration / totalLines;
-                    const currentLineIndex = Math.floor(audio.currentTime / timePerLine);
-
-                    // Update UI classes
-                    for (let i = 0; i < totalLines; i++) {
-                        const lineEl = document.getElementById(`lyric-${i}`);
-                        if (lineEl) {
-                            lineEl.classList.remove('active', 'past');
-                            if (i === currentLineIndex) {
-                                lineEl.classList.add('active');
-                                lineEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                            } else if (i < currentLineIndex) {
-                                lineEl.classList.add('past');
-                            }
-                        }
-                    }
-                }
             }
         });
 
